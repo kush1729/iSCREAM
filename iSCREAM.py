@@ -306,12 +306,15 @@ class PatrollingMonster: #Patrolling monster
 
 class Grid:
     size = (display_width / numRows, display_height / numCols)  #size of each individual cell
+
+    #colours of seperate types of blocks. Should be updated on creation of new type of block
     colour = snow
     wall_colour = med_blue
     ice_colour = light_blue
-    breaking_colour = red
+    breaking_colour = [red, orange]
     borderColour = black
-    #to check for walls/obstacles. False - free space, True - obstacle/wall etc
+    
+    #to check for walls/obstacles. False - free space
     walls = [[False for y in range(numCols)] for x in range(numRows)]    
     def __init__(self):
         for x in range(numRows):
@@ -328,7 +331,7 @@ class Grid:
                 elif self.walls[x][y] == 'ice':
                     c = self.ice_colour
                 elif self.walls[x][y] == 'breaking':
-                    c = self.breaking_colour if time_count%2==0 else self.ice_colour
+                    c = self.breaking_colour[time_count%2]
                 else:
                     c = self.colour
                 pygame.draw.rect(gameDisplay, c, (x * self.size[0], y*self.size[1], self.size[0], self.size[1]))
