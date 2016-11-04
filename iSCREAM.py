@@ -1,8 +1,19 @@
+'''This game is an arcade game played in a 17x17 grid (though the outer row/column is currently used for a border).
+Most of the graphics are bruteforce, i.e. after every iteration of the game loop it will wipe the screen and redraw everything.
+As of now, there is currently no design which would point out the pun in the title. This needs to be changed.
+
+Before creating any new level please go through the entire code once. Also read the multiline comment guide given for creation of
+new levels/monsters.
+
+Hardcoding of values has been avoided as much as possible, but for designing the levels the current values have been used.
+It is better not to change the value of any variable unless specified.'''
+
 import pygame
-from time import sleep, time
+from time import sleep, time  #sleep() function to delay loading of stuff. time() function to time the levels.
 pygame.init()
 
 #COLOURS------------------------
+#These colours are mainly for decoration of the screen and colouring of the grid.
 white = (255, 255, 255)
 black = (0, 0, 0)
 snow = (255, 250, 250)
@@ -17,22 +28,26 @@ green = (34, 177, 76)
 light_green = (0, 255, 0)
 #-------------------------------
 
-FPS = 40
-numRows = 17
+FPS = 40    #Frames per second. Can increase/reduce to increase/reduce speed of everything, which would increase/reduce difficulty.
+numRows = 17    #Better not to change as currently all levels are designed with this value.
 numCols = 17
+
+#This is for the creation of the border wall.
 wall_loc = [(0, x) for x in range(numCols)] + [(x, 0) for x in range(numRows)]
 wall_loc += [(numRows - 1, x) for x in range(numCols)] + [(x, numCols - 1) for x in range(numRows)]
 wall_loc = list(set(wall_loc))
 
-display_width = display_height = 595    #17 divides 595, to make block size 35x35 pixels
+display_width = display_height = 595    #17 divides 595, to make block size 35x35 pixels. Preferably do not change.
 pygame.display.set_caption('iScream')
 pygame.display.set_icon(pygame.image.load('icon.jpg'))
 gameDisplay = pygame.display.set_mode((display_width, display_height))
-gameDisplay.fill(white)
-clock = pygame.time.Clock()
+gameDisplay.fill(snow)
+clock = pygame.time.Clock()     #regulate game loop
 pygame.display.update()
 
 #INITIALIZE CONTROLS-------------
+#these are currently variables to hold the specific key controls.
+#These can be changed, as long as the dictionary in function instructions() is updated to keep up with any change in controls.
 SHOOT = pygame.K_SPACE
 MOVE_LEFT = pygame.K_LEFT
 MOVE_RIGHT = pygame.K_RIGHT
@@ -42,7 +57,8 @@ PAUSE = pygame.K_p
 #--------------------------------
 
 #GUI----------------------------
-def button(text, x, y, width, height, inactiveColour, activeColour, action = None):
+
+def button(text, x, y, width, height, inactiveColour, activeColour, action = None): 
     global curLvl, lvl_no
     cur = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -61,9 +77,7 @@ def button(text, x, y, width, height, inactiveColour, activeColour, action = Non
                 if action[:3] == 'lvl':
                     lvl_no = int(action[-1])
                     reset()
-                    if lvl_no == 1: curLvl = Level1()
-                    elif lvl_no == 2: curLvl = Level2()
-                    elif lvl_no == 3: curLvl = Level3()
+                    levels[lvl_no - 1].__init__()
                     gameLoop()
         pygame.draw.rect(gameDisplay, activeColour, (x, y, width, height))
     else:
@@ -94,10 +108,10 @@ def message_to_screen(msg, color, center_loc, size = "small"):
     gameDisplay.blit(textSurf, textRect)
 #-------------------------------
 
-class Sprite:
+class Sprite:   #preferably do not mess around with anything in this class.
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load('player.png')
-    loc = [1, 1]
+    loc = [1, 1] #dummy value. will be changed at the start of each level.
     direction = 'up'
     
     def __init__(self):
@@ -150,14 +164,44 @@ class Sprite:
             if self.loc == list(fruit.loc):
                 fruits.remove(fruit)
 
+'''MONSTER CREATOR:
+A new class should be created for every new monster.
+The monster can be anything at all.
+
+The class should be of the following form:
+class <monstername>: #preferably end the name with 'Monster'
+    size = (display_width / numRows, display_height / numCols)
+    image = pygame.image.load(<name of image>)
+    loc = [0, 0]    #currently a dummy value. Will be edited during initialization of a new level (see below)
+    #Any other variable pertaining to the movement or appearance etc of the monster should follow.
+
+    def __init__(self): #NO OTHER PARAMETERS
+        self.draw()
+
+    def draw(self): #NO OTHER PARAMETERS
+        x, y = gridLoc[self.loc[0]][self.loc[1]]
+        gameDisplay.blit(self.image, (x+1, y+1))
+
+    def move(self): #NO OTHER PARAMETERS
+        #This function basically makes the monster move
+        #when the monsters move, unless it is a speciality of the monster, the monster should not run into walls/ice etc.
+        
+    #Any other function pertaining to the movement of the monsters can follow. Please remember that the move() function is the
+    #function that will run every iteration of the game loop
+
+Please follow this format carefully (just copy paste the above when creating a new class)
+There is no rule about what the monster can do, so long as the level does not become impossible.
+'''
+
 class ChasingMonster:
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load('chasing.png')
     loc = [0, 0]
+    
     chasing = True
-    timer = 0
-    time_limit = int(1500*1.5//FPS)
-    target_block = [0, 0]
+    timer = 0   #to keep track of when the monster breaks the block in question
+    time_limit = int(1500*1.5//FPS)     #amount of iterations before the monster breaks the block.
+    target_block = [0, 0] 
 
     def __init__(self):
         self.draw()
@@ -176,6 +220,9 @@ class ChasingMonster:
             cells.walls[self.target_block[0]][self.target_block[1]] = 'breaking'
 
     def chase(self):
+        '''Currently the logic is to close the gap between player and monster
+        Once it starts trying to break the wall, it gives priority to breaking walls, even if the player is not on the other side
+        Logic can be significantly improved.'''
         self.timer = 0
         move = [0, 0]
         dx = player.loc[0] - self.loc[0]    #-ve means player to left, +ve means player to right
@@ -209,7 +256,7 @@ class PatrollingMonster: #Patrolling monster
     def __init__(self):
         self.draw()
 
-    def moveRect(self, rect):
+    def moveRect(self, rect):   #Inbuilt default patrolling
         #rect = (top left corner x, top left corner y, width, height) in terms of matrix index
         x, y, width, height = rect
         move = [0, 0]
@@ -230,7 +277,7 @@ class PatrollingMonster: #Patrolling monster
             self.loc[0] += move[0]
             self.loc[1] += move[1]
 
-    def moveLine(self, point1, point2):
+    def moveLine(self, point1, point2): #Inbuilt default patrolling
         #end points of the line. x1 == x2 or y1 == y2 necessarily
         x1, y1 = point1
         x2, y2 = point2
@@ -248,10 +295,14 @@ class PatrollingMonster: #Patrolling monster
             else:
                 if self.loc[0] > x1: self.loc[0] -= 1
                 else: self.clockwise = True
+
+    #if the level so requires, the patrolling can be made specific to the level as long as this function is a member of the level class
     
     def draw(self):
         x, y = gridLoc[self.loc[0]][self.loc[1]]
         gameDisplay.blit(self.image, (x+1, y+1))
+        
+#end of MONSTER CREATOR region
 
 class Grid:
     size = (display_width / numRows, display_height / numCols)  #size of each individual cell
@@ -289,6 +340,7 @@ class Fruit:
     loc = [8, 8]
     #note: the frozen counterparts are for images that don't have a transparent background.
     #if all images get a frozen background, then freeze() function is rendered useless
+    #freeze function is just there to ensure that it is possible to see that the fruit is stuck in ice
     apple = pygame.image.load('apple.jpg')
     banana = pygame.image.load('banana.png') #no need new image with blue background as current image has transparent background
     frozen_apple = pygame.image.load('frozen_apple.jpg')
@@ -301,19 +353,25 @@ class Fruit:
     def draw(self):
         gameDisplay.blit(self.image, (self.loc[0] * self.size[0] + 1, self.loc[1] * self.size[1] + 1))
 
+    #specific functions can be made governing the movement, appearance, and any other property of special fruits.
+    #preferably any new fruit should not have its own class, as it would become slightly difficult for initialization of fruits in the creation of new level 
+    
     def freeze(self):
         if cells.walls[self.loc[0]][self.loc[1]] == 'ice':
             if self.image == self.apple: self.image = self.frozen_apple
         else:
             if self.image == self.frozen_apple: self.image = self.apple
 
-'''Level Creator:
+'''LEVEL CREATOR:
 Every level should have a class object
 it should be of the form:
 class Level<number>:
     startTime = 0
+    numFruitLvls = 1 #This is for counting no of times the fruits in a level reset. Look/play Level3() for an example
     
-    def __init__(self):
+    #other variables particular to the level can be created 
+    def __init__(self, draw = True): #the draw parameter is there to prevent unnecesary creation of levels. NO OTHER PARAMETERS
+        if not draw: return
         startTime = time()
         player.loc = [1, 1]
         #INTIALIZE WALLS
@@ -327,19 +385,24 @@ class Level<number>:
         #INITIALIZE MONSTERS
         global monsters
 
-    def moveMonster(self):
-        #make monsters move
-This format should be strictly followed, taking care of uppercase and lowercase letters
-This is because the level object is assigned to a variable and standard notations have been used with regard to this variable
-Go through the code once before creating a level.'''
+    #other functions specific to this level can be created
 
-MAXLEVELS = 3   #UPDATE AFTER CREATION OF NEW LEVEL!!
+    def moveMonster(self): #NO OTHER PARAMETERS
+        #make monsters move
+This format should be strictly followed. (Just copy paste above when creating new level)
+This is because the level object is assigned to a variable and standard notations have been used with regard to this variable
+
+The level can have any type of monster, fruit, block, etc, as long as it is still possible (however hard it may be) to complete the level 
+
+NOTE:- After creating a new level class, the only thing to be done is to change the MAXLEVELS variable and the levels variable, which
+is initialized after all the classes'''
 
 class Level1:
     startTime = 0
     numFruitLvls = 1
     
-    def __init__(self):
+    def __init__(self, draw = True):
+        if not draw: return
         self.startTime = time()
         player.loc = [3, 3]
         #INTIALIZE WALLS
@@ -388,7 +451,9 @@ class Level1:
         monsters[2].loc = [6, numRows - 7]
         monsters[3].loc = [numRows - 7, 6]
 
-    def Monster0Move(self):
+    #As the route of the monsters is level specific, the inbuilt patrolling functions have not been used for 2 of the monsters 
+
+    def Monster0Move(self): 
         m = monsters[0]
         move = [0, 0]
         if m.clockwise:
@@ -453,7 +518,8 @@ class Level2:
     startTime = 0
     numFruitLvls = 1
     
-    def __init__(self): 
+    def __init__(self, draw = True):
+        if not draw: return
         self.startTime = time()
         player.loc = [1, 1]
         global fruits
@@ -519,7 +585,8 @@ class Level3:
     startTime = 0
     numFruitLvls = 2
     
-    def __init__(self):
+    def __init__(self, draw = True):
+        if not draw: return
         self.startTime = time()
         player.loc = [3, 3]
         #INTIALIZE ICE
@@ -574,7 +641,11 @@ class Level3:
                 fruits[c+2].loc = [j, numCols - i - 1]
                 fruits[c+3].loc = [numRows - i - 1, numCols - j - 1]
                 c += 4
-        
+
+MAXLEVELS = 3   #UPDATE AFTER CREATION OF NEW LEVEL!!
+levels = [Level1(False), Level2(False), Level3(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
+
+#end of LEVEL CREATOR region
   
 #INITIALIZE EVERYTHING---------------
 cells = Grid()
@@ -582,10 +653,11 @@ lvl_no = 1
 #gridLoc gives the actual pixel location of any cell relative to the matrix index of the cell
 gridLoc = [[(x*cells.size[0], y*cells.size[1]) for y in range(numCols)] for x in range(numRows)]
 player = Sprite()
-curLvl = Level1()
 
 def instructions():
-    key_dict = {MOVE_UP:'UP', MOVE_DOWN:'DOWN', MOVE_LEFT:'LEFT', MOVE_RIGHT:'RIGHT', SHOOT:'SPACE', PAUSE:'P'}
+    key_dict = {pygame.K_UP:'UP ARROW KEY', pygame.K_DOWN:'DOWN ARROW KEY', pygame.K_LEFT:'LEFT ARROW KEY',
+                pygame.K_RIGHT:'RIGHT ARROW KEY', pygame.K_SPACE:'SPACE', pygame.K_p:'P', pygame.K_w: 'W',
+                pygame.K_a: 'A', pygame.K_s: 'S', pygame.K_d: 'D', pygame.K_END: 'END'}
     gameDisplay.fill(snow)
     message_to_screen('INSTRUCTIONS', chocolate, (display_width//2, 50) , 'med-large')
     message_to_screen('MOVE LEFT:- '+key_dict[MOVE_LEFT], med_blue, (display_width//2, 150), 'small')
@@ -607,7 +679,7 @@ def instructions():
         pygame.display.update()
         clock.tick(FPS)
 
-def reset():
+def reset():    #clear out grid at the end of every level
     global lvl_no
     for x in range(numRows):
         for y in range(numCols):
@@ -620,7 +692,7 @@ def gameEnd(won):
     reset()
     
     #Find Time Taken to complete level
-    endTime = int(time() - curLvl.startTime)
+    endTime = int(time() - levels[lvl_no - 1].startTime)
     minute = endTime // 60
     seconds = endTime % 60
     if 10 > seconds >= 0: seconds = '0'+str(seconds)
@@ -671,7 +743,6 @@ def gameStart():
         pygame.display.update()
         clock.tick(FPS)
 
-#For user to select levels. MUST UPDATE AFTER CREATING EVERY LEVEL!!
 def levelSelect():
     gameDisplay.fill(snow)
     message_to_screen('CHOOSE LEVEL', light_red, (display_width//2, 75) , 'medium')
@@ -701,7 +772,7 @@ def levelSelect():
 
 def gameLoop():
     pause = False
-    time_count = 0
+    time_count = 0  #keep track of time elapsed for timed events like breaking of walls etc
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
@@ -713,24 +784,24 @@ def gameLoop():
                     player.shoot()
                 if event.key == PAUSE:
                     pause = not(pause)
-        if pause: continue
+        if pause: continue #prevent any movement when paused
         keystate = pygame.key.get_pressed()
         if time_count % 2 == 0:
             player.move((keystate[MOVE_RIGHT] - keystate[MOVE_LEFT]), (keystate[MOVE_DOWN] - keystate[MOVE_UP]))
         player.collideFruit()
         player.collideMonsters()
         if len(fruits) == 0:
-            if curLvl.numFruitLvls > 1:
-                curLvl.resetFruits()
+            if levels[lvl_no - 1].numFruitLvls > 1:
+                levels[lvl_no - 1].resetFruits()
             else:
                 gameEnd(won = True)
-        if time_count % 1.5 == 0:
-            curLvl.moveMonster()
+        #to make monsters slightly slower than player. increase difficulty by removing this condition
+        if time_count % 1.5 == 0: levels[lvl_no - 1].moveMonster() 
         gameDisplay.fill(white)
         cells.draw(time_count)
         for f in fruits:
             f.draw()
-            f.freeze()
+            f.freeze()  #unnecessary if all images have transparent background
         for m in monsters: m.draw()
         player.draw()
         time_count += 1
