@@ -14,23 +14,6 @@ There can be more types of blocks.
 
 PS: Harder to play than it sounds.
 
-ABOUT THE CODE:
-
-Uses pygame module of python extensively and also uses the time module mainly to time the levels.
-
-Mostly hardcoding has been avoided but as each level has been designed with a 15x15 playing space it is better that none of the constants/values be messed around with.
-
-All images are either stock images from the net or done in paint. Some have a transparent background and some don't, though it is better that all of them should have a transparent background.
-Images should be in the same folder for the program to function properly (throws an error otherwise).
-For the blocks, no images have been used, rather it has been drawn using pygame.draw.rect() function.
-
-About The Levels:
-Each new level should be of increasing difficulty. If it doesn't feel so then the names of the classes can be changed to swap the levels without throwing an error.
-There is a particular format to creating a new class for a new level, which is given as a multiline comment in the code itself.
-Creating a new level does not take much time (half hour max) unless a new type of monster or fruit is being created.
-
-For creating a new monster a new class for the monster has to be created. Like creation of new levels, there is again a particular format to doing this.
-
 TO DOs:
 
  CREATE MORE LEVELS. Current goal is to create at least 15 levels. This is the topmost priority, and there is actually nothing much else to do.
