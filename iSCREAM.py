@@ -259,6 +259,8 @@ class PatrollingMonster: #Patrolling monster
     def moveRect(self, rect):   #Inbuilt default patrolling
         #rect = (top left corner x, top left corner y, width, height) in terms of matrix index
         x, y, width, height = rect
+        width -= 1
+        height -= 1
         move = [0, 0]
         if self.clockwise:
             if self.loc[0] == x and self.loc[1] != y: move[1] = -1
@@ -339,7 +341,7 @@ class Grid:
 class Fruit:
     size = (display_width / numRows, display_height / numCols)
     colour = red
-    loc = [8, 8]
+    loc = [0, 1]
     #note: the frozen counterparts are for images that don't have a transparent background.
     #if all images get a frozen background, then freeze() function is rendered useless
     #freeze function is just there to ensure that it is possible to see that the fruit is stuck in ice
@@ -515,8 +517,8 @@ class Level1:
     def moveMonster(self):
         self.Monster0Move()
         self.Monster1Move()
-        monsters[2].moveRect((6, 6, numRows - 13, numCols - 13))
-        monsters[3].moveRect((6, 6, numRows - 13, numCols - 13))
+        monsters[2].moveRect((6, 6, numRows - 12, numCols - 12))
+        monsters[3].moveRect((6, 6, numRows - 12, numCols - 12))
   
 class Level2:
     startTime = 0
@@ -579,11 +581,11 @@ class Level2:
             m.clockwise = True
 
     def moveMonster(self):
-        monsters[0].moveRect((1, 1, numRows - 3, numCols - 3))
-        monsters[1].moveRect((3, 3, numRows - 7, numCols - 7))
-        monsters[2].moveRect((3, 3, numRows - 7, numCols - 7))
-        monsters[3].moveRect((5, 5, numRows - 11, numCols - 11))
-        monsters[4].moveRect((5, 5, numRows - 11, numCols - 11))
+        monsters[0].moveRect((1, 1, numRows - 2, numCols - 2))
+        monsters[1].moveRect((3, 3, numRows - 6, numCols - 6))
+        monsters[2].moveRect((3, 3, numRows - 6, numCols - 6))
+        monsters[3].moveRect((5, 5, numRows - 10, numCols - 10))
+        monsters[4].moveRect((5, 5, numRows - 10, numCols - 10))
 
 class Level3:
     startTime = 0
@@ -647,6 +649,79 @@ class Level3:
                 c += 4
 
 class Level4:
+    startTime = 0
+    numFruitLvls = 2 
+    
+    def __init__(self, draw = True):
+        if not draw: return
+        self.startTime = time()
+        player.loc = [1, 1]
+        #INTIALIZE WALLS
+        #no walls in this level
+        #INTIALIZE ICE
+        for i in range(2, numRows - 2, 2):
+            cells.walls[i][2] = 'ice'
+            cells.walls[2][i] = 'ice'
+            cells.walls[i][numRows-3] = 'ice'
+            cells.walls[numRows-3][i] = 'ice'
+            cells.walls[i][4] = 'ice'
+            cells.walls[4][i] = 'ice'
+            cells.walls[i][numRows-5] = 'ice'
+            cells.walls[numRows-5][i] = 'ice'
+        for i in range(3, numRows-3, 2):
+            cells.walls[i][3] = 'ice'
+            cells.walls[3][i] = 'ice'
+            cells.walls[i][numRows-4] = 'ice'
+            cells.walls[numRows-4][i] = 'ice'
+        for i in range(7, numRows-7):
+            cells.walls[i][7] = 'ice'
+            cells.walls[7][i] = 'ice'
+            cells.walls[i][numRows-8] = 'ice'
+            cells.walls[numRows-8][i] = 'ice'
+            
+        #INITIALIZE FRUITS
+        global fruits
+        fruits = [Fruit('grape') for i in range(41)]
+        fruits[0].loc = [3, 3]
+        fruits[1].loc = [3, numRows-4]
+        fruits[2].loc = [numRows-4, 3]
+        fruits[3].loc = [numRows-4, numRows-4]
+        fruits[4].loc = [numRows//2, numCols//2]
+        c = 5
+        for i in range(4, numRows-4):
+            fruits[c].loc = [i, 3]
+            fruits[c+1].loc = [3, i]
+            fruits[c+2].loc = [i, numRows-4]
+            fruits[c+3].loc = [numRows-4, i]
+            c += 4
+
+        #INITIALIZE MONSTERS
+        global monsters
+        monsters = [ChasingMonster()] + [PatrollingMonster() for i in range(4)]
+        monsters[0].loc = [numRows - 2, numCols - 2]
+        monsters[1].loc = [numRows - 2, 1]
+        monsters[2].loc = [1, numCols - 2]
+        monsters[3].loc = [5, 5]
+        monsters[4].loc = [numRows - 6, numCols - 6]
+
+    def resetFruits(self):
+        global fruits
+        self.numFruitLvls = 1
+        fruits = [Fruit('banana') for i in range(30)]
+        c = 0
+        for i in range(1, numRows - 1):
+            fruits[c].loc = [i, 1]
+            fruits[c+1].loc = [i, numCols - 2]
+            c += 2
+
+    def moveMonster(self):
+        monsters[0].move()
+        monsters[1].moveRect((1, 1, numRows - 2, numCols - 2))
+        monsters[2].moveRect((1, 1, numRows - 2, numCols - 2))
+        monsters[3].moveRect((5, 5, numRows - 10, numCols - 10))
+        monsters[4].moveRect((5, 5, numRows - 10, numCols - 10))
+
+class Level5:
     startTime = 0
     numFruitLvls = 3
     
@@ -720,19 +795,19 @@ class Level4:
                 c += 4
         
     def moveMonster(self):
-        monsters[0].moveRect((1, 1, numRows-3, numCols-3))
-        monsters[1].moveRect((1, 1, numRows-3, numCols-3))
-        monsters[2].moveRect((2, 3, 5, 4))
-        monsters[3].moveRect((4, 4, 1, 2))
-        monsters[4].moveRect((numRows//2 + 1, 3, 5, 4))
-        monsters[5].moveRect((numRows-6, 4, 1, 2))
-        monsters[6].moveRect((2,numRows//2 + 1, 5, 4))
-        monsters[7].moveRect((4, numRows-7, 1, 2))
-        monsters[8].moveRect((numRows//2 + 1, numRows//2+1, 5, 4))
-        monsters[9].moveRect((numRows-6, numRows-7, 1, 2))
+        monsters[0].moveRect((1, 1, numRows-2, numCols-2))
+        monsters[1].moveRect((1, 1, numRows-2, numCols-2))
+        monsters[2].moveRect((2, 3, 6, 5))
+        monsters[3].moveRect((4, 4, 2, 3))
+        monsters[4].moveRect((numRows//2 + 1, 3, 6, 5))
+        monsters[5].moveRect((numRows-6, 4, 2, 3))
+        monsters[6].moveRect((2,numRows//2 + 1, 6, 5))
+        monsters[7].moveRect((4, numRows-7, 2, 3))
+        monsters[8].moveRect((numRows//2 + 1, numRows//2+1, 6, 5))
+        monsters[9].moveRect((numRows-6, numRows-7, 2, 3))
 
-MAXLEVELS = 4   #UPDATE AFTER CREATION OF NEW LEVEL!!
-levels = [Level1(False), Level2(False), Level3(False), Level4(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
+MAXLEVELS = 5   #UPDATE AFTER CREATION OF NEW LEVEL!!
+levels = [Level1(False), Level2(False), Level3(False), Level4(False), Level5(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
 
 #end of LEVEL CREATOR region
   
