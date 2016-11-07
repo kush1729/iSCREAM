@@ -28,7 +28,8 @@ green = (34, 177, 76)
 light_green = (0, 255, 0)
 #-------------------------------
 
-FPS = 40    #Frames per second. Can increase/reduce to increase/reduce speed of everything, which would increase/reduce difficulty.
+FPS = 20    #Frames per second. Can increase/reduce to increase/reduce speed of everything, which would increase/reduce difficulty.
+time_factor = 10    #this slows down monsters. It makes their speed ((time_factor-1)/time_factor) times player speed, which is governed by FPS
 numRows = 17    #Better not to change as currently all levels are designed with this value.
 numCols = 17
 
@@ -967,23 +968,24 @@ def gameLoop():
                 pygame.quit()
                 exit(0)
             if event.type == pygame.KEYDOWN:
-                horizontal_moves = 0
-                vertical_moves = 0
+##                horizontal_moves = 0
+##                vertical_moves = 0
                 if event.key == SHOOT and not pause:
                     player.shoot()
                 elif event.key == PAUSE:
                     pause = not pause
-                elif event.key == MOVE_RIGHT:
-                    horizontal_moves += 1
-                elif event.key == MOVE_LEFT:
-                    horizontal_moves -= 1
-                elif event.key == MOVE_DOWN:
-                    vertical_moves += 1
-                elif event.key == MOVE_UP:
-                    vertical_moves -= 1
-                player.move(horizontal_moves, vertical_moves)
+##                elif event.key == MOVE_RIGHT:
+##                    horizontal_moves += 1
+##                elif event.key == MOVE_LEFT:
+##                    horizontal_moves -= 1
+##                elif event.key == MOVE_DOWN:
+##                    vertical_moves += 1
+##                elif event.key == MOVE_UP:
+##                    vertical_moves -= 1
+##                player.move(horizontal_moves, vertical_moves)
         if pause: continue #prevent any movement when paused
         keystate = pygame.key.get_pressed()
+        player.move((keystate[MOVE_RIGHT] - keystate[MOVE_LEFT]), (keystate[MOVE_DOWN] - keystate[MOVE_UP]))
         player.collideFruit()
         player.collideMonsters()
         if len(fruits) == 0:
@@ -992,7 +994,7 @@ def gameLoop():
             else:
                 gameEnd(won = True)
         #to make monsters slightly slower than player. increase difficulty by removing this condition
-        if time_count % 1.5 == 0:
+        if time_count % time_factor != 0:
             freezeMonsters()
             levels[lvl_no - 1].moveMonster() 
         gameDisplay.fill(white)
