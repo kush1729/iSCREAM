@@ -108,7 +108,7 @@ def message_to_screen(msg, color, center_loc, size = "small"):
     gameDisplay.blit(textSurf, textRect)
 #-------------------------------
 
-class Sprite:   #preferably do not mess around with anything in this class.
+class Sprite:   #preferably do not mess around with anything in this class :P
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load('player.png')
     loc = [1, 1] #dummy value. will be changed at the start of each level.
@@ -152,7 +152,7 @@ class Sprite:   #preferably do not mess around with anything in this class.
                 if cell_type == 'ice': cells.walls[x1][y1] = False
                 elif cell_type == False: cells.walls[x1][y1] = 'ice'
             else:
-                return
+                break
 
     def collideMonsters(self):
         for monster in monsters:
@@ -173,6 +173,7 @@ class <monstername>: #preferably end the name with 'Monster'
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load(<name of image>)
     loc = [0, 0]    #currently a dummy value. Will be edited during initialization of a new level (see below)
+    freeze = False  #for freezing the monsters
     #Any other variable pertaining to the movement or appearance etc of the monster should follow.
 
     def __init__(self): #NO OTHER PARAMETERS
@@ -185,6 +186,7 @@ class <monstername>: #preferably end the name with 'Monster'
     def move(self): #NO OTHER PARAMETERS
         #This function basically makes the monster move
         #when the monsters move, unless it is a speciality of the monster, the monster should not run into walls/ice etc.
+        if self.freeze == True: return  #to freeze monster.s
         
     #Any other function pertaining to the movement of the monsters can follow. Please remember that the move() function is the
     #function that will run every iteration of the game loop
@@ -193,9 +195,22 @@ Please follow this format carefully (just copy paste the above when creating a n
 There is no rule about what the monster can do, so long as the level does not become impossible.
 '''
 
+def freezeMonsters():
+    '''monsters that are completely surrounded by ice are said to be frozen. They cannot move.
+    note:- for now, no difference in appearance between normal and frozen monsters. This needs to be changed.'''
+    global monsters
+    for m in monsters:
+        if m.freeze == True: continue
+        x, y = m.loc[0], m.loc[1]
+        if cells.walls[x-1][y-1] == 'ice' and cells.walls[x-1][y] == 'ice' and cells.walls[x-1][y+1] == 'ice' and \
+            cells.walls[x][y-1] == 'ice' and cells.walls[x][y+1] == 'ice' and \
+            cells.walls[x+1][y-1] == 'ice' and cells.walls[x+1][y] == 'ice' and cells.walls[x+1][y+1] == 'ice':
+            m.freeze = True
+
 class ChasingMonster:
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load('chasing.png')
+    freeze = False
     loc = [0, 0]
     
     chasing = True
@@ -242,7 +257,9 @@ class ChasingMonster:
             self.loc[1] += move[1]
 
     def move(self):
-        if self.chasing:
+        if self.freeze == True:
+            return
+        elif self.chasing:
             self.chase()
         else:
             self.breaking()
@@ -251,6 +268,8 @@ class PatrollingMonster: #Patrolling monster
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load('patrolling.png')
     loc = [0, 0]
+    freeze = False
+    
     clockwise = True
     
     def __init__(self):
@@ -258,7 +277,10 @@ class PatrollingMonster: #Patrolling monster
 
     def moveRect(self, rect):   #Inbuilt default patrolling
         #rect = (top left corner x, top left corner y, width, height) in terms of matrix index
+        if self.freeze == True: return
         x, y, width, height = rect
+        width -= 1
+        height -= 1
         move = [0, 0]
         if self.clockwise:
             if self.loc[0] == x and self.loc[1] != y: move[1] = -1
@@ -278,6 +300,7 @@ class PatrollingMonster: #Patrolling monster
 
     def moveLine(self, point1, point2): #Inbuilt default patrolling
         #end points of the line. x1 == x2 or y1 == y2 necessarily
+        if self.freeze == True: return
         x1, y1 = point1
         x2, y2 = point2
         if x1 == x2:   
@@ -339,7 +362,7 @@ class Grid:
 class Fruit:
     size = (display_width / numRows, display_height / numCols)
     colour = red
-    loc = [8, 8]
+    loc = [0, 1]
     #note: the frozen counterparts are for images that don't have a transparent background.
     #if all images get a frozen background, then freeze() function is rendered useless
     #freeze function is just there to ensure that it is possible to see that the fruit is stuck in ice
@@ -457,7 +480,8 @@ class Level1:
 
     #As the route of the monsters is level specific, the inbuilt patrolling functions have not been used for 2 of the monsters 
 
-    def Monster0Move(self): 
+    def Monster0Move(self):
+        if monsters[0].freeze == True: return
         m = monsters[0]
         move = [0, 0]
         if m.clockwise:
@@ -485,6 +509,7 @@ class Level1:
             m.clockwise = (not m.clockwise)
 
     def Monster1Move(self):
+        if monsters[1].freeze == True: return
         m = monsters[1]
         move = [0, 0]
         if not m.clockwise:
@@ -515,8 +540,8 @@ class Level1:
     def moveMonster(self):
         self.Monster0Move()
         self.Monster1Move()
-        monsters[2].moveRect((6, 6, numRows - 13, numCols - 13))
-        monsters[3].moveRect((6, 6, numRows - 13, numCols - 13))
+        monsters[2].moveRect((6, 6, numRows - 12, numCols - 12))
+        monsters[3].moveRect((6, 6, numRows - 12, numCols - 12))
   
 class Level2:
     startTime = 0
@@ -579,11 +604,11 @@ class Level2:
             m.clockwise = True
 
     def moveMonster(self):
-        monsters[0].moveRect((1, 1, numRows - 3, numCols - 3))
-        monsters[1].moveRect((3, 3, numRows - 7, numCols - 7))
-        monsters[2].moveRect((3, 3, numRows - 7, numCols - 7))
-        monsters[3].moveRect((5, 5, numRows - 11, numCols - 11))
-        monsters[4].moveRect((5, 5, numRows - 11, numCols - 11))
+        monsters[0].moveRect((1, 1, numRows - 2, numCols - 2))
+        monsters[1].moveRect((3, 3, numRows - 6, numCols - 6))
+        monsters[2].moveRect((3, 3, numRows - 6, numCols - 6))
+        monsters[3].moveRect((5, 5, numRows - 10, numCols - 10))
+        monsters[4].moveRect((5, 5, numRows - 10, numCols - 10))
 
 class Level3:
     startTime = 0
@@ -648,6 +673,79 @@ class Level3:
 
 class Level4:
     startTime = 0
+    numFruitLvls = 2 
+    
+    def __init__(self, draw = True):
+        if not draw: return
+        self.startTime = time()
+        player.loc = [1, 1]
+        #INTIALIZE WALLS
+        #no walls in this level
+        #INTIALIZE ICE
+        for i in range(2, numRows - 2, 2):
+            cells.walls[i][2] = 'ice'
+            cells.walls[2][i] = 'ice'
+            cells.walls[i][numRows-3] = 'ice'
+            cells.walls[numRows-3][i] = 'ice'
+            cells.walls[i][4] = 'ice'
+            cells.walls[4][i] = 'ice'
+            cells.walls[i][numRows-5] = 'ice'
+            cells.walls[numRows-5][i] = 'ice'
+        for i in range(3, numRows-3, 2):
+            cells.walls[i][3] = 'ice'
+            cells.walls[3][i] = 'ice'
+            cells.walls[i][numRows-4] = 'ice'
+            cells.walls[numRows-4][i] = 'ice'
+        for i in range(7, numRows-7):
+            cells.walls[i][7] = 'ice'
+            cells.walls[7][i] = 'ice'
+            cells.walls[i][numRows-8] = 'ice'
+            cells.walls[numRows-8][i] = 'ice'
+            
+        #INITIALIZE FRUITS
+        global fruits
+        fruits = [Fruit('grape') for i in range(41)]
+        fruits[0].loc = [3, 3]
+        fruits[1].loc = [3, numRows-4]
+        fruits[2].loc = [numRows-4, 3]
+        fruits[3].loc = [numRows-4, numRows-4]
+        fruits[4].loc = [numRows//2, numCols//2]
+        c = 5
+        for i in range(4, numRows-4):
+            fruits[c].loc = [i, 3]
+            fruits[c+1].loc = [3, i]
+            fruits[c+2].loc = [i, numRows-4]
+            fruits[c+3].loc = [numRows-4, i]
+            c += 4
+
+        #INITIALIZE MONSTERS
+        global monsters
+        monsters = [ChasingMonster()] + [PatrollingMonster() for i in range(4)]
+        monsters[0].loc = [numRows - 2, numCols - 2]
+        monsters[1].loc = [numRows - 2, 1]
+        monsters[2].loc = [1, numCols - 2]
+        monsters[3].loc = [5, 5]
+        monsters[4].loc = [numRows - 6, numCols - 6]
+
+    def resetFruits(self):
+        global fruits
+        self.numFruitLvls = 1
+        fruits = [Fruit('banana') for i in range(30)]
+        c = 0
+        for i in range(1, numRows - 1):
+            fruits[c].loc = [i, 1]
+            fruits[c+1].loc = [i, numCols - 2]
+            c += 2
+
+    def moveMonster(self):
+        monsters[0].move()
+        monsters[1].moveRect((1, 1, numRows - 2, numCols - 2))
+        monsters[2].moveRect((1, 1, numRows - 2, numCols - 2))
+        monsters[3].moveRect((5, 5, numRows - 10, numCols - 10))
+        monsters[4].moveRect((5, 5, numRows - 10, numCols - 10))
+
+class Level5:
+    startTime = 0
     numFruitLvls = 3
     
     def __init__(self, draw = True): 
@@ -705,7 +803,7 @@ class Level4:
         if self.numFruitLvls == 2:
             fruits = [Fruit('banana') for i in range(30)]
             c = 0
-            for i in range(numRows-2):
+            for i in range(1, numRows-1):
                 fruits[c].loc = [1, i]
                 fruits[c+1].loc = [numRows-2, i]
                 c += 2
@@ -720,19 +818,19 @@ class Level4:
                 c += 4
         
     def moveMonster(self):
-        monsters[0].moveRect((1, 1, numRows-3, numCols-3))
-        monsters[1].moveRect((1, 1, numRows-3, numCols-3))
-        monsters[2].moveRect((2, 3, 5, 4))
-        monsters[3].moveRect((4, 4, 1, 2))
-        monsters[4].moveRect((numRows//2 + 1, 3, 5, 4))
-        monsters[5].moveRect((numRows-6, 4, 1, 2))
-        monsters[6].moveRect((2,numRows//2 + 1, 5, 4))
-        monsters[7].moveRect((4, numRows-7, 1, 2))
-        monsters[8].moveRect((numRows//2 + 1, numRows//2+1, 5, 4))
-        monsters[9].moveRect((numRows-6, numRows-7, 1, 2))
+        monsters[0].moveRect((1, 1, numRows-2, numCols-2))
+        monsters[1].moveRect((1, 1, numRows-2, numCols-2))
+        monsters[2].moveRect((2, 3, 6, 5))
+        monsters[3].moveRect((4, 4, 2, 3))
+        monsters[4].moveRect((numRows//2 + 1, 3, 6, 5))
+        monsters[5].moveRect((numRows-6, 4, 2, 3))
+        monsters[6].moveRect((2,numRows//2 + 1, 6, 5))
+        monsters[7].moveRect((4, numRows-7, 2, 3))
+        monsters[8].moveRect((numRows//2 + 1, numRows//2+1, 6, 5))
+        monsters[9].moveRect((numRows-6, numRows-7, 2, 3))
 
-MAXLEVELS = 4   #UPDATE AFTER CREATION OF NEW LEVEL!!
-levels = [Level1(False), Level2(False), Level3(False), Level4(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
+MAXLEVELS = 5   #UPDATE AFTER CREATION OF NEW LEVEL!!
+levels = [Level1(False), Level2(False), Level3(False), Level4(False), Level5(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
 
 #end of LEVEL CREATOR region
   
@@ -894,7 +992,9 @@ def gameLoop():
             else:
                 gameEnd(won = True)
         #to make monsters slightly slower than player. increase difficulty by removing this condition
-        if time_count % 1.5 == 0: levels[lvl_no - 1].moveMonster() 
+        if time_count % 1.5 == 0:
+            freezeMonsters()
+            levels[lvl_no - 1].moveMonster() 
         gameDisplay.fill(white)
         cells.draw(time_count)
         for f in fruits:

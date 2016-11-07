@@ -6,6 +6,7 @@ It is an arcade game played in a 17x17 grid, tho the outer perimeter is nonreach
 User moves the player (in the form of an ugly mutant ice cream) by the arrow keys.
 Basic aim of the game is to collect all fruits in a level and complete all levels to win the game.
 There are monsters of varying types (chasing, patrolling, etc) that are out to kill the player. The player should avoid them at all costs. 
+The player can freeze monsters by completely surrounding them by ice.
 
 Each playing level compulsorily has 2 types of walls: 
 1) Normal walls: These are indestructible blue blocks.
