@@ -867,16 +867,25 @@ def gameLoop():
             if event.type == pygame.QUIT or \
                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 pygame.quit()
-                quit()
+                exit(0)
             if event.type == pygame.KEYDOWN:
+                horizontal_moves = 0
+                vertical_moves = 0
                 if event.key == SHOOT and not pause:
                     player.shoot()
-                if event.key == PAUSE:
-                    pause = not(pause)
+                elif event.key == PAUSE:
+                    pause = not pause
+                elif event.key == MOVE_RIGHT:
+                    horizontal_moves += 1
+                elif event.key == MOVE_LEFT:
+                    horizontal_moves -= 1
+                elif event.key == MOVE_DOWN:
+                    vertical_moves += 1
+                elif event.key == MOVE_UP:
+                    vertical_moves -= 1
+                player.move(horizontal_moves, vertical_moves)
         if pause: continue #prevent any movement when paused
         keystate = pygame.key.get_pressed()
-        if time_count % 2 == 0:
-            player.move((keystate[MOVE_RIGHT] - keystate[MOVE_LEFT]), (keystate[MOVE_DOWN] - keystate[MOVE_UP]))
         player.collideFruit()
         player.collideMonsters()
         if len(fruits) == 0:
