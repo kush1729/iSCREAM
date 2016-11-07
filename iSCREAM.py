@@ -108,7 +108,7 @@ def message_to_screen(msg, color, center_loc, size = "small"):
     gameDisplay.blit(textSurf, textRect)
 #-------------------------------
 
-class Sprite:   #preferably do not mess around with anything in this class.
+class Sprite:   #preferably do not mess around with anything in this class :P
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load('player.png')
     loc = [1, 1] #dummy value. will be changed at the start of each level.
@@ -152,7 +152,7 @@ class Sprite:   #preferably do not mess around with anything in this class.
                 if cell_type == 'ice': cells.walls[x1][y1] = False
                 elif cell_type == False: cells.walls[x1][y1] = 'ice'
             else:
-                return
+                break
 
     def collideMonsters(self):
         for monster in monsters:
@@ -173,6 +173,7 @@ class <monstername>: #preferably end the name with 'Monster'
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load(<name of image>)
     loc = [0, 0]    #currently a dummy value. Will be edited during initialization of a new level (see below)
+    freeze = False  #for freezing the monsters
     #Any other variable pertaining to the movement or appearance etc of the monster should follow.
 
     def __init__(self): #NO OTHER PARAMETERS
@@ -185,6 +186,7 @@ class <monstername>: #preferably end the name with 'Monster'
     def move(self): #NO OTHER PARAMETERS
         #This function basically makes the monster move
         #when the monsters move, unless it is a speciality of the monster, the monster should not run into walls/ice etc.
+        if self.freeze == True: return  #to freeze monster.s
         
     #Any other function pertaining to the movement of the monsters can follow. Please remember that the move() function is the
     #function that will run every iteration of the game loop
@@ -193,9 +195,22 @@ Please follow this format carefully (just copy paste the above when creating a n
 There is no rule about what the monster can do, so long as the level does not become impossible.
 '''
 
+def freezeMonsters():
+    '''monsters that are completely surrounded by ice are said to be frozen. They cannot move.
+    note:- for now, no difference in appearance between normal and frozen monsters. This needs to be changed.'''
+    global monsters
+    for m in monsters:
+        if m.freeze == True: continue
+        x, y = m.loc[0], m.loc[1]
+        if cells.walls[x-1][y-1] == 'ice' and cells.walls[x-1][y] == 'ice' and cells.walls[x-1][y+1] == 'ice' and \
+            cells.walls[x][y-1] == 'ice' and cells.walls[x][y+1] == 'ice' and \
+            cells.walls[x+1][y-1] == 'ice' and cells.walls[x+1][y] == 'ice' and cells.walls[x+1][y+1] == 'ice':
+            m.freeze = True
+
 class ChasingMonster:
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load('chasing.png')
+    freeze = False
     loc = [0, 0]
     
     chasing = True
@@ -242,7 +257,9 @@ class ChasingMonster:
             self.loc[1] += move[1]
 
     def move(self):
-        if self.chasing:
+        if self.freeze == True:
+            return
+        elif self.chasing:
             self.chase()
         else:
             self.breaking()
@@ -251,6 +268,8 @@ class PatrollingMonster: #Patrolling monster
     size = (display_width / numRows, display_height / numCols)
     image = pygame.image.load('patrolling.png')
     loc = [0, 0]
+    freeze = False
+    
     clockwise = True
     
     def __init__(self):
@@ -258,6 +277,7 @@ class PatrollingMonster: #Patrolling monster
 
     def moveRect(self, rect):   #Inbuilt default patrolling
         #rect = (top left corner x, top left corner y, width, height) in terms of matrix index
+        if self.freeze == True: return
         x, y, width, height = rect
         width -= 1
         height -= 1
@@ -280,6 +300,7 @@ class PatrollingMonster: #Patrolling monster
 
     def moveLine(self, point1, point2): #Inbuilt default patrolling
         #end points of the line. x1 == x2 or y1 == y2 necessarily
+        if self.freeze == True: return
         x1, y1 = point1
         x2, y2 = point2
         if x1 == x2:   
@@ -459,7 +480,8 @@ class Level1:
 
     #As the route of the monsters is level specific, the inbuilt patrolling functions have not been used for 2 of the monsters 
 
-    def Monster0Move(self): 
+    def Monster0Move(self):
+        if monsters[0].freeze == True: return
         m = monsters[0]
         move = [0, 0]
         if m.clockwise:
@@ -487,6 +509,7 @@ class Level1:
             m.clockwise = (not m.clockwise)
 
     def Monster1Move(self):
+        if monsters[1].freeze == True: return
         m = monsters[1]
         move = [0, 0]
         if not m.clockwise:
@@ -780,7 +803,7 @@ class Level5:
         if self.numFruitLvls == 2:
             fruits = [Fruit('banana') for i in range(30)]
             c = 0
-            for i in range(numRows-2):
+            for i in range(1, numRows-1):
                 fruits[c].loc = [1, i]
                 fruits[c+1].loc = [numRows-2, i]
                 c += 2
@@ -960,7 +983,9 @@ def gameLoop():
             else:
                 gameEnd(won = True)
         #to make monsters slightly slower than player. increase difficulty by removing this condition
-        if time_count % 1.5 == 0: levels[lvl_no - 1].moveMonster() 
+        if time_count % 1.5 == 0:
+            freezeMonsters()
+            levels[lvl_no - 1].moveMonster() 
         gameDisplay.fill(white)
         cells.draw(time_count)
         for f in fruits:
