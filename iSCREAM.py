@@ -59,7 +59,7 @@ PAUSE = pygame.K_p
 
 #GUI----------------------------
 
-def button(text, x, y, width, height, inactiveColour, activeColour, action = None): 
+def button(text, x, y, width, height, inactiveColour, activeColour, action = None):
     global curLvl, lvl_no
     cur = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -132,7 +132,7 @@ class Sprite:   #preferably do not mess around with anything in this class :P
         if cells.walls[future_move[0]][future_move[1]] != False:
             return
         if (numRows > future_move[0] >= 0) and x != 0:
-            self.loc[0] += x 
+            self.loc[0] += x
         elif (numCols > future_move[1] >= 0):
             self.loc[1] += y
 
@@ -148,7 +148,7 @@ class Sprite:   #preferably do not mess around with anything in this class :P
             i += 1
             x1, y1 = x + x_dir*i, y + y_dir * i
             if [x1, y1] in mon_loc:
-                return 
+                return
             if cells.walls[x1][y1] == cell_type:
                 if cell_type == 'ice': cells.walls[x1][y1] = False
                 elif cell_type == False: cells.walls[x1][y1] = 'ice'
@@ -217,7 +217,7 @@ class ChasingMonster:
     chasing = True
     timer = 0   #to keep track of when the monster breaks the block in question
     time_limit = int(1500*1.5//FPS)     #amount of iterations before the monster breaks the block.
-    target_block = [0, 0] 
+    target_block = [0, 0]
 
     def __init__(self):
         self.draw()
@@ -276,7 +276,7 @@ class PatrollingMonster: #Patrolling monster
     def __init__(self):
         self.draw()
 
-    def moveRect(obj, rect):   #Inbuilt default patrolling 
+    def moveRect(obj, rect):   #Inbuilt default patrolling
         #rect = (top left corner x, top left corner y, width, height) in terms of matrix index
         if obj.freeze == True: return
         x, y, width, height = rect
@@ -299,13 +299,13 @@ class PatrollingMonster: #Patrolling monster
             obj.loc[0] += move[0]
             obj.loc[1] += move[1]
 
-    def moveLine(obj, point1, point2): #Inbuilt default patrolling 
+    def moveLine(obj, point1, point2): #Inbuilt default patrolling
         #end points of the line. x1 == x2 or y1 == y2 necessarily
         if obj.freeze == True: return
         x1, y1 = point1
         x2, y2 = point2
         move = [0, 0]
-        if x1 == x2:   
+        if x1 == x2:
             if obj.clockwise:
                 if obj.loc[1] < y2: move[1] += 1
                 else: obj.clockwise = False
@@ -344,7 +344,7 @@ class Grid:
     borderColour = black
     
     #to check for walls/obstacles. False - free space
-    walls = [[False for y in range(numCols)] for x in range(numRows)]    
+    walls = [[False for y in range(numCols)] for x in range(numRows)]
     def __init__(self):
         for x in range(numRows):
             for y in range(numCols):
@@ -352,7 +352,7 @@ class Grid:
                     self.walls[x][y] = 'wall'
         self.draw(0)
 
-    def draw(self, time_count): #take time_count as parameter for cool colouring effects that depend on time for the walls 
+    def draw(self, time_count): #take time_count as parameter for cool colouring effects that depend on time for the walls
         for x in range(numRows):
             for y in range(numCols):
                 if self.walls[x][y] == 'wall':
@@ -392,9 +392,9 @@ class Fruit:
         gameDisplay.blit(self.image, (self.loc[0] * self.size[0] + 1, self.loc[1] * self.size[1] + 1))
 
     #specific functions can be made governing the movement, appearance, and any other property of special fruits.
-    #preferably any new fruit should not have its own class, as it would become slightly difficult for initialization of fruits in the creation of new level 
+    #preferably any new fruit should not have its own class, as it would become slightly difficult for initialization of fruits in the creation of new level
 
-    def moveStrawberry(self, path_type = None, path):
+    def moveStrawberry(self, path, path_type = None):
         #if path in rect format then move in rectangle, if path in line format move in line, else pass a level specific function
         if self.frozen: return
         if path_type == 'rect': PatrollingMonster.moveRect(self, path)
@@ -414,7 +414,7 @@ class Level<number>:
     startTime = 0
     numFruitLvls = 1 #This is for counting no of times the fruits in a level reset. Look/play Level3() for an example
     
-    #other variables particular to the level can be created 
+    #other variables particular to the level can be created
     def __init__(self, draw = True): #the draw parameter is there to prevent unnecesary creation of levels. NO OTHER PARAMETERS
         if not draw: return
         self.startTime = time()
@@ -437,7 +437,7 @@ class Level<number>:
 This format should be strictly followed. (Just copy paste above when creating new level)
 This is because the level object is assigned to a variable and standard notations have been used with regard to this variable
 
-The level can have any type of monster, fruit, block, etc, as long as it is still possible (however hard it may be) to complete the level 
+The level can have any type of monster, fruit, block, etc, as long as it is still possible (however hard it may be) to complete the level
 
 NOTE:- After creating a new level class, the only thing to be done is to change the MAXLEVELS variable and the levels variable, which
 is initialized after all the classes'''
@@ -479,7 +479,7 @@ class Level1:
         fruits[2].loc = [numRows - 2 , 1]
         fruits[3].loc = [numRows - 2, numCols - 2]
         fruits[4].loc = [numRows - 4, numCols - 4]
-        m = numRows//2 
+        m = numRows//2
         fruits[5].loc = [m - 1, m - 1]
         fruits[6].loc = [m + 1, m - 1]
         fruits[7].loc = [m - 1, m + 1]
@@ -496,7 +496,7 @@ class Level1:
         monsters[2].loc = [6, numRows - 7]
         monsters[3].loc = [numRows - 7, 6]
 
-    #As the route of the monsters is level specific, the inbuilt patrolling functions have not been used for 2 of the monsters 
+    #As the route of the monsters is level specific, the inbuilt patrolling functions have not been used for 2 of the monsters
 
     def Monster0Move(self):
         if monsters[0].freeze == True: return
@@ -602,7 +602,7 @@ class Level2:
         for i in range(3, numCols- 3, 2):
             fruits[c].loc = [2, i]
             fruits[c+1].loc = [numRows - 3, i]
-            c += 2  
+            c += 2
         for i in range(3, 5):
             fruits[c].loc = [i, 2]
             fruits[c+1].loc = [numRows - i - 1, 2]
@@ -669,7 +669,7 @@ class Level3:
                 c += 4
         #INITIALIZE MONSTERS
         global monsters
-        monsters = [ChasingMonster()] 
+        monsters = [ChasingMonster()]
         monsters[0].loc = [numRows//2, numCols//2]
         
     def moveMonster(self):
@@ -691,7 +691,7 @@ class Level3:
 
 class Level4:
     startTime = 0
-    numFruitLvls = 2 
+    numFruitLvls = 2
     
     def __init__(self, draw = True):
         if not draw: return
@@ -765,14 +765,14 @@ class Level4:
 ##class Level5:
 ##    startTime = 0
 ##    numFruitLvls = 1 #This is for counting no of times the fruits in a level reset. Look/play Level3() for an example
-##    
-##    #other variables particular to the level can be created 
+##
+##    #other variables particular to the level can be created
 ##    def __init__(self, draw = True): #the draw parameter is there to prevent unnecesary creation of levels. NO OTHER PARAMETERS
 ##        if not draw: return
 ##        self.startTime = time()
 ##        player.loc = [1, 1]
 ##        #INTIALIZE WALLS
-##        
+##
 ##        #INTIALIZE ICE
 ##
 ##        #INITIALIZE FRUITS
@@ -791,7 +791,7 @@ class Level5:
     startTime = 0
     numFruitLvls = 3
     
-    def __init__(self, draw = True): 
+    def __init__(self, draw = True):
         if not draw: return
         self.startTime = time()
         m = numRows//2
@@ -898,7 +898,7 @@ def instructions():
     message_to_screen('SHOOT/BREAK ICE:- '+key_dict[SHOOT], med_blue, (display_width//2, 350), 'small')
     message_to_screen('PAUSE:- '+key_dict[PAUSE], med_blue, (display_width//2, 400), 'small')
     pygame.display.update()
-    sleep(0.2) 
+    sleep(0.2)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
@@ -961,7 +961,7 @@ def gameStart():
     message_to_screen('WELCOME TO', light_red, (display_width//2, 75) , 'medium')
     message_to_screen('iSCREAM', chocolate, (display_width//2, 175), 'x-large')
     pygame.display.update()
-    sleep(0.3) 
+    sleep(0.3)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
@@ -978,7 +978,7 @@ def levelSelect():
     gameDisplay.fill(snow)
     message_to_screen('CHOOSE LEVEL', light_red, (display_width//2, 75) , 'medium')
     pygame.display.update()
-    sleep(0.3) 
+    sleep(0.3)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
@@ -1039,7 +1039,7 @@ def gameLoop():
         #to make monsters slightly slower than player. increase difficulty by removing this condition
         if time_count % time_factor != 0:
             freezeMonsters()
-            levels[lvl_no - 1].moveMonster() 
+            levels[lvl_no - 1].moveMonster()
         gameDisplay.fill(white)
         cells.draw(time_count)
         for f in fruits:
