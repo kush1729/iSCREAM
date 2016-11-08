@@ -276,48 +276,54 @@ class PatrollingMonster: #Patrolling monster
     def __init__(self):
         self.draw()
 
-    def moveRect(self, rect):   #Inbuilt default patrolling
+    def moveRect(obj, rect):   #Inbuilt default patrolling 
         #rect = (top left corner x, top left corner y, width, height) in terms of matrix index
-        if self.freeze == True: return
+        if obj.freeze == True: return
         x, y, width, height = rect
         width -= 1
         height -= 1
         move = [0, 0]
-        if self.clockwise:
-            if self.loc[0] == x and self.loc[1] != y: move[1] = -1
-            elif self.loc[1] == y and self.loc[0] != x + width: move[0] = 1
-            elif self.loc[1] == y + height and self.loc[0] != x: move[0] = -1
-            elif self.loc[0] == x + width and self.loc[1] != y + height: move[1] = 1
+        if obj.clockwise:
+            if obj.loc[0] == x and obj.loc[1] != y: move[1] = -1
+            elif obj.loc[1] == y and obj.loc[0] != x + width: move[0] = 1
+            elif obj.loc[1] == y + height and obj.loc[0] != x: move[0] = -1
+            elif obj.loc[0] == x + width and obj.loc[1] != y + height: move[1] = 1
         else:   #anti clockwise
-            if self.loc[0] == x and self.loc[1] != y + height: move[1] = 1
-            elif self.loc[1] == y and self.loc[0] != x: move[0] = -1
-            elif self.loc[1] == y + height and self.loc[0] != width + x: move[0] = 1
-            elif self.loc[0] == x + width and self.loc[1] != y: move[1] = -1
-        if cells.walls[self.loc[0] + move[0]][self.loc[1] + move[1]] != False:
-            self.clockwise = False if self.clockwise else True
+            if obj.loc[0] == x and obj.loc[1] != y + height: move[1] = 1
+            elif obj.loc[1] == y and obj.loc[0] != x: move[0] = -1
+            elif obj.loc[1] == y + height and obj.loc[0] != width + x: move[0] = 1
+            elif obj.loc[0] == x + width and obj.loc[1] != y: move[1] = -1
+        if cells.walls[obj.loc[0] + move[0]][obj.loc[1] + move[1]] != False:
+            obj.clockwise = False if obj.clockwise else True
         else:
-            self.loc[0] += move[0]
-            self.loc[1] += move[1]
+            obj.loc[0] += move[0]
+            obj.loc[1] += move[1]
 
-    def moveLine(self, point1, point2): #Inbuilt default patrolling
+    def moveLine(obj, point1, point2): #Inbuilt default patrolling 
         #end points of the line. x1 == x2 or y1 == y2 necessarily
-        if self.freeze == True: return
+        if obj.freeze == True: return
         x1, y1 = point1
         x2, y2 = point2
+        move = [0, 0]
         if x1 == x2:   
-            if self.clockwise:
-                if self.loc[1] < y2: self.loc[1] += 1
-                else: self.clockwise = False
+            if obj.clockwise:
+                if obj.loc[1] < y2: move[1] += 1
+                else: obj.clockwise = False
             else:
-                if self.loc[1] > y1: self.loc[1] -= 1
-                else: self.clockwise = True
+                if obj.loc[1] > y1: move[1] -= 1
+                else: obj.clockwise = True
         elif y1 == y2:
-            if self.clockwise:
-                if self.loc[0] < x2: self.loc[0] += 1
-                else: self.clockwise = False
+            if obj.clockwise:
+                if obj.loc[0] < x2: move[0] += 1
+                else: obj.clockwise = False
             else:
-                if self.loc[0] > x1: self.loc[0] -= 1
-                else: self.clockwise = True
+                if obj.loc[0] > x1: move[0] -= 1
+                else: obj.clockwise = True
+        if cells.walls[obj.loc[0] + move[0]][obj.loc[1] + move[1]] != False:
+            obj.clockwise = False if obj.clockwise else True
+        else:
+            obj.loc[0] += move[0]
+            obj.loc[1] += move[1]
 
     #if the level so requires, the patrolling can be made specific to the level as long as this function is a member of the level class
     
@@ -364,18 +370,22 @@ class Fruit:
     size = (display_width / numRows, display_height / numCols)
     colour = red
     loc = [0, 1]
+    frozen = False   #This is for fruits that move (eg strawberry), so that if they get stuck in walls they will stop moving
+    clockwise = True  #This is for the strawberry which goes about a given path
     #note: the frozen counterparts are for images that don't have a transparent background.
     #if all images get a frozen background, then freeze() function is rendered useless
     #freeze function is just there to ensure that it is possible to see that the fruit is stuck in ice
     apple = pygame.image.load('apple.jpg')
     banana = pygame.image.load('banana.png') #no need new image with blue background as current image has transparent background
     grape = pygame.image.load('grapes.png')
+    strawberry = pygame.image.load('strawberry.png')
     frozen_apple = pygame.image.load('frozen_apple.jpg')
     image = apple
     
     def __init__(self, typ = 'apple'):
         if typ == 'banana': self.image = self.banana
         elif typ == 'grape': self.image = self.grape
+        elif typ == 'strawberry': self.image = self.strawberry
         self.draw()
 
     def draw(self):
@@ -383,6 +393,13 @@ class Fruit:
 
     #specific functions can be made governing the movement, appearance, and any other property of special fruits.
     #preferably any new fruit should not have its own class, as it would become slightly difficult for initialization of fruits in the creation of new level 
+
+    def moveStrawberry(self, path_type = None, path):
+        #if path in rect format then move in rectangle, if path in line format move in line, else pass a level specific function
+        if self.frozen: return
+        if path_type == 'rect': PatrollingMonster.moveRect(self, path)
+        elif path_type == 'line': PatrollingMonster.moveLine(self, path[0], path[1])
+        else: path(self)
     
     def freeze(self):
         if cells.walls[self.loc[0]][self.loc[1]] == 'ice':
@@ -745,6 +762,31 @@ class Level4:
         monsters[3].moveRect((5, 5, numRows - 10, numCols - 10))
         monsters[4].moveRect((5, 5, numRows - 10, numCols - 10))
 
+##class Level5:
+##    startTime = 0
+##    numFruitLvls = 1 #This is for counting no of times the fruits in a level reset. Look/play Level3() for an example
+##    
+##    #other variables particular to the level can be created 
+##    def __init__(self, draw = True): #the draw parameter is there to prevent unnecesary creation of levels. NO OTHER PARAMETERS
+##        if not draw: return
+##        self.startTime = time()
+##        player.loc = [1, 1]
+##        #INTIALIZE WALLS
+##        
+##        #INTIALIZE ICE
+##
+##        #INITIALIZE FRUITS
+##        global fruits
+##        fruits = [Fruit() for i in range(4)]
+##
+##        #INITIALIZE MONSTERS
+##        global monsters
+##
+##    #other functions specific to this level can be created
+##
+##    def moveMonster(self): #NO OTHER PARAMETERS
+##        #make monsters move
+
 class Level5:
     startTime = 0
     numFruitLvls = 3
@@ -831,7 +873,8 @@ class Level5:
         monsters[9].moveRect((numRows-6, numRows-7, 2, 3))
 
 MAXLEVELS = 5   #UPDATE AFTER CREATION OF NEW LEVEL!!
-levels = [Level1(False), Level2(False), Level3(False), Level4(False), Level5(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
+levels = [Level1(False), Level2(False), Level3(False), Level4(False), Level5(False)]
+          #Level6(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
 
 #end of LEVEL CREATOR region
   
