@@ -1072,7 +1072,7 @@ def levelSelect():
                 quit()
         row = 150
         btnSize = 80
-        gap = 25
+        gap = 32
         n =(display_width - gap)//(btnSize + gap)
         x = gap
         y = 150
