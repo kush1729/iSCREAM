@@ -159,6 +159,7 @@ class Sprite:   #preferably do not mess around with anything in this class :P
     def collideMonsters(self):
         for monster in monsters:
             if self.loc == list(monster.loc):
+                self.direction = 'up'
                 gameEnd(won = False)
     
     def collideFruit(self):
@@ -802,6 +803,66 @@ class Level4:
 
 class Level5:
     startTime = 0
+    numFruitLvls = 2 
+    
+    def __init__(self, draw = True):
+        if not draw: return
+        self.startTime = time()
+        player.loc = [numRows//2, numCols//2]
+        #INTIALIZE WALLS
+        #none
+        #INTIALIZE ICE
+        for j in range(2, 7, 2):
+            for i in range(numRows//2 - j, numRows//2 + j + 1):
+                cells.walls[i][numRows//2 - j] = 'ice'
+                cells.walls[numRows//2 - j][i] = 'ice'
+                cells.walls[i][numRows//2 + j] = 'ice'
+                cells.walls[numRows//2 + j][i] = 'ice'
+        #INITIALIZE FRUITS
+        global fruits
+        fruits = [Fruit('banana') for i in range(12)]
+        c = 0
+        for i in range(1, numRows//2 - 1, 2):
+            fruits[c].loc = [i, i]
+            fruits[c+1].loc = [numRows - i - 1, numCols - i - 1]
+            fruits[c+2].loc = [i, numCols - i - 1]
+            fruits[c+3].loc = [numRows - i - 1, i]
+            c += 4
+        #INITIALIZE MONSTERS
+        global monsters
+        monsters = [PatrollingMonster() for i in range(7)]
+        monsters[0].loc = [numRows//2 - 1, numCols//2 - 1]
+        c = 1
+        for i in range(1, numRows//2 - 1, 2):
+            monsters[c].loc = [i, i]
+            monsters[c+1].loc = [numRows-i-1, numCols-i-1]
+            c += 2
+
+    def resetFruits(self):
+        global fruits, monsters
+        self.numFruitLvls -= 1
+        fruits = [Fruit()]
+        fruits[0].loc = [numRows//2, numCols//2]
+        monsters = [monsters[0]] + [ChasingMonster() for i in range(4)]
+        monsters[1].loc = [1, numCols//2]
+        monsters[2].loc = [numRows//2, 1]
+        monsters[3].loc = [numRows//2, numCols - 2]
+        monsters[4].loc = [numRows - 2, numCols//2]
+
+    def moveMonster(self):
+        monsters[0].moveRect((numRows//2 - 1, numCols//2 - 1, 3, 3))
+        if self.numFruitLvls == 2:
+            c = 1
+            for i in range(1, numRows//2 - 1, 2):
+                monsters[c].moveRect((i, i, numRows - 2*i, numCols - 2*i)) 
+                monsters[c+1].moveRect((i, i, numRows - 2*i, numCols - 2*i))
+                c += 2
+        else:
+            for i in range(1, 5):
+                monsters[i].move()
+
+class Level6:
+    startTime = 0
     numFruitLvls = 2
     
     def __init__(self, draw = True): 
@@ -901,7 +962,7 @@ class Level5:
         else:
             monsters[0].move()
             
-class Level6:
+class Level7:
     startTime = 0
     numFruitLvls = 3
     
@@ -986,7 +1047,7 @@ class Level6:
         monsters[8].moveRect((numRows//2 + 1, numRows//2+1, 6, 5))
         monsters[9].moveRect((numRows-6, numRows-7, 2, 3))
 
-class Level7:
+class Level8:
     startTime = 0
     numFruitLvls = 1
     
@@ -1056,9 +1117,9 @@ class Level7:
         monsters[9].moveRect((5, 5, numRows-10, numCols-10))
 
         
-MAXLEVELS = 7   #UPDATE AFTER CREATION OF NEW LEVEL!!
+MAXLEVELS = 8   #UPDATE AFTER CREATION OF NEW LEVEL!!
 levels = [Level1(False), Level2(False), Level3(False), Level4(False), Level5(False),\
-          Level6(False), Level7(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
+          Level6(False), Level7(False), Level8(False)] #UPDATE AFTER CREATION OF NEW LEVEL!!
 
 #end of LEVEL CREATOR region
   
