@@ -538,7 +538,7 @@ class Level1:
     #As the route of the monsters is level specific, the inbuilt patrolling functions have not been used for 2 of the monsters
 
     def Monster0Move(self):
-        if monsters[0].freeze == True: return
+        if monsters[0].frozen == True: return
         m = monsters[0]
         move = [0, 0]
         if m.clockwise:
@@ -566,7 +566,7 @@ class Level1:
             m.clockwise = (not m.clockwise)
 
     def Monster1Move(self):
-        if monsters[1].freeze == True: return
+        if monsters[1].frozen == True: return
         m = monsters[1]
         move = [0, 0]
         if not m.clockwise:
