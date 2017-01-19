@@ -1,6 +1,8 @@
 import feeders
 
 class Point(object):
+    __slots__ = ('x_coordinate', 'y_coordinate')
+
     def __init__(self, x_coordinate, y_coordinate):
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
@@ -18,6 +20,8 @@ class Point(object):
         return Point(point.x_coordinate, point.y_coordinate)
 
 class Line(object):
+    __slots__ = ('start', 'end', 'is_vertical', 'is_horizontal', 'direction', 'iterate_direction')
+
     def __init__(self, start, end):
         self.start = start
         self.end = end

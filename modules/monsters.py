@@ -17,9 +17,9 @@ class PatrollingMonster(Monster):
         self.point_feed = self.get_path()
         def mover():
             for location in self.point_feed:
-                time.sleep(0.5)
+                time.sleep(0.1)
                 self.move_to(location)
-        move_scheduler = threading.Timer(e0, mover)
+        move_scheduler = threading.Timer(0, mover)
         move_scheduler.start()
     
     def get_path(self):

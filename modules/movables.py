@@ -19,8 +19,9 @@ class Movable(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def move_to(self, new_location):
+        self.board.move(self.board_location, new_location)
         self.board_location = new_location
     
     def update(self):
         self.position = self.board.get_position(self.board_location)
-        self.rect.center = self.position
+        self.rect.topleft = self.position
