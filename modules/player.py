@@ -1,11 +1,11 @@
-from movables import Movable
+from movable import Movable
 
 class Player(Movable):
 	"""Defines the player that the user controls.
 	"""
 
-	def __init__(self, given_board_location, given_image_string, given_board):
-		super(Player, self).__init__(given_board_location, given_image_string, given_board)
+	def __init__(self, given_board_location, given_board, surface, given_image_string):
+		Movable.__init__(self, given_board_location, given_board, surface, given_image_string)
 		self.is_alive = True
 	
 	def move(self, x_displacement, y_displacement):
