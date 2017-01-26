@@ -7,16 +7,14 @@ import colors
 
 class Game(object):
     def __init__(self):
-        self.screen = pygame.display.set_mode((595, 595))
-        def update_callback(rect):
-            pygame.display.update(rect)
-        self.data = levelparser.get_objects((35, 35), 35, self.screen, update_callback)
+        self.screen = pygame.display.set_mode((525, 525))
+        self.data = levelparser.get_objects((0, 0), 35, self.screen)
         self.not_suspended = True
     
     
     def start(self):
         board = self.data[levelparser.BOARD]
-        user = player.Player(locations.Point(5, 5), board, self.screen, "images\\player.png")
+        user = self.data[levelparser.PLAYER]
         wall_blocks = pygame.sprite.RenderUpdates(self.data[levelparser.WALL_BLOCKS])
         ice_blocks = pygame.sprite.RenderUpdates(self.data[levelparser.ICE_BLOCKS])
         patrolling_monsters = pygame.sprite.RenderUpdates(self.data[levelparser.PATROLLING_MONSTERS])
@@ -36,7 +34,9 @@ class Game(object):
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         user.kill()
-                        self.not_suspended = False     
+                        self.not_suspended = False
+                    else:
+                        user.handle_event(event)
         except KeyboardInterrupt:
             user.kill()
 
