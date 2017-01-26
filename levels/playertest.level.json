@@ -1,0 +1,10 @@
+{
+    "boardHeight": 15,
+    "boardWidth": 15,
+    "levelName": "test",
+    "numFruitWaves": 0,
+    "player": [5, 5],
+    "fruitWaves": [],
+    "patrollingMonsters": [],
+    "mapFile": "playertest.level.map"
+}

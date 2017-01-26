@@ -3,7 +3,7 @@
     "boardWidth": 15,
     "levelName": "test",
     "numFruitWaves": 1,
-    "playerPosition": [2, 2],
+    "player": [4, 2],
     "fruitWaves": [
         {"strawberries": []}
         ],
