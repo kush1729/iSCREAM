@@ -1,19 +1,25 @@
 from movable import Movable
+import pygame
+import locations
 
 class Player(Movable):
 	"""Defines the player that the user controls.
 	"""
 
-	def __init__(self, given_board_location, given_board, surface, given_image_string):
-		Movable.__init__(self, given_board_location, given_board, surface, given_image_string)
+	def __init__(self, given_board_location, given_board, surface):
+		Movable.__init__(self, given_board_location, given_board, surface, ".\\images\\player.png")
 		self.is_alive = True
 	
-	def move(self, x_displacement, y_displacement):
-		new_location = Point(
-			self.position.x_coordinate + x_displacement,
-			self.position.y_coordinate + y_displacement)
-		if self.board.is_location_clear(new_location):
-			self.move_to(new_location)
+	def handle_event(self, event):
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_UP:
+				self.move_to(self.board_location.up())
+			elif event.key == pygame.K_DOWN:
+				self.move_to(self.board_location.down())
+			elif event.key == pygame.K_LEFT:
+				self.move_to(self.board_location.left())
+			elif event.key == pygame.K_RIGHT:
+				self.move_to(self.board_location.right())
 	
 	def kill(self):
 		self.is_alive = False

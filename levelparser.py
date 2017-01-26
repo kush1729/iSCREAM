@@ -7,6 +7,7 @@ import blocks
 import locations
 import fruits
 import monsters
+import player
 
 MAP_FILE = 'mapFile'
 BOARD = 'board'
@@ -20,6 +21,7 @@ CHASING_MONSTERS = 'chasingMonsters'
 ICE_BLOCKS = 'iceBlocks'
 WALL_BLOCKS = 'wallBlocks'
 POINTS = 'points'
+PLAYER  = 'player'
 
 board_piece_type = {
     'i': blocks.IceBlock,
@@ -32,7 +34,7 @@ character_map = {
     "w": WALL_BLOCKS
 }
 
-def get_objects(board_position, square_side, board_surface, board_update_callback):
+def get_objects(board_position, square_side, board_surface):
     return_data = {
         BOARD: None,
         ICE_BLOCKS: [],
@@ -40,15 +42,18 @@ def get_objects(board_position, square_side, board_surface, board_update_callbac
         FRUIT_WAVES: [],
         PATROLLING_MONSTERS: [],
         CHASING_MONSTERS: [],
+        PLAYER: None
     }    
 
     with open('.\\levels\\test.level.json') as level_file:
         level_data = json.loads(level_file.read())
     
-    
     the_board = board.GraphicalBoard(level_data[BOARD_WIDTH],
     level_data[BOARD_HEIGHT],
-    board_position, board_surface, board_update_callback)
+    board_position, board_surface)
+
+    return_data[PLAYER] = player.Player(locations.Point(*level_data[PLAYER]), the_board, board_surface)
+
     return_data[PATROLLING_MONSTERS] = [
         monsters.PatrollingMonster(
             locations.Point(*monsterdata[POINTS][0]),
