@@ -1,38 +1,40 @@
 import pygame
 import colors
+import player
 from locations import Point
 
 class Board(object):
 
-    def __init__(self, given_grid):
-        self.grid = given_grid
+    def __init__(self, width, height):
+        self.grid = [[None for i in xrange(width)] for j in xrange(width)]
 
     def start(self, player):
         self.player = player
 
     def is_location_clear(self, location):
-        return self.grid[location.y_coordinate][location.x_coordinate] == "empty"
+        return self.grid[location.y_coordinate][location.x_coordinate] == None
+
+    def reserve_location(self, location, boardpiece):
+        self.grid[location.y_coordinate][location.x_coordinate] = boardpiece
     
     def game_not_suspended(self):
         return self.player.is_alive
     
     def move(self, from_point, to_point):
         self.grid[to_point.y_coordinate][to_point.x_coordinate] = self.grid[from_point.y_coordinate][from_point.x_coordinate]
-        self.grid[from_point.y_coordinate][from_point.y_coordinate] = "empty"
+        self.grid[from_point.y_coordinate][from_point.x_coordinate] = None
     
     def check_if_player_at(self, location):
-        return self.grid[location.y_coordinate][location.x_coordinate] == "player"
+        return isinstance(self.grid[location.y_coordinate][location.x_coordinate], player.Player)
 
 class GraphicalBoard(Board):
     
-    def __init__(self, given_grid, position, height, width, surface):
-        super(GraphicalBoard, self).__init__(given_grid)
+    def __init__(self, board_width, board_height, position, surface, update_callback):
+        Board.__init__(self, board_width, board_height)
         self.position = position
-        self.height = height
-        self.width = width
-        self.square_side = width / len(given_grid) #Make this computed
+        self.square_side = 35
         self.draw_surface = surface
-
+        self.update_callback = update_callback
         self.draw()
 
     def draw(self):
@@ -47,9 +49,13 @@ class GraphicalBoard(Board):
         self.position[Y] + location.y_coordinate * self.square_side)
     
     def move(self, from_point, to_point):
-        super(GraphicalBoard, self).move(from_point, to_point)
+        Board.move(self, from_point, to_point)
         self.draw_board_rect(from_point)
     
     def draw_board_rect(self, location):
-        pygame.draw.rect(self.draw_surface, colors.SNOW, pygame.Rect(location.x_coordinate * self.square_side, location.y_coordinate * self.square_side, self.square_side, self.square_side))
-        pygame.draw.rect(self.draw_surface, colors.BLACK, pygame.Rect(location.x_coordinate * self.square_side, location.y_coordinate * self.square_side, self.square_side, self.square_side), 1)
+        update_rect = pygame.Rect(self.position[0] + location.x_coordinate * self.square_side,
+            self.position[1] + location.y_coordinate * self.square_side,
+            self.square_side, self.square_side)
+        pygame.draw.rect(self.draw_surface, colors.SNOW, update_rect)
+        pygame.draw.rect(self.draw_surface, colors.BLACK, update_rect, 1)
+        self.update_callback(update_rect)

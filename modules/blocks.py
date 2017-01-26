@@ -1,21 +1,34 @@
+import boardpiece
 import pygame
 import colors
 
-class Block(pygame.sprite.Sprite):
-    def __init__(self, given_board_location, given_board, given_surface):
-        pygame.sprite.Sprite.__init__(self)
-        
-        self.board = given_board
-        self.board_location = given_board_location
-        self.position = self.board.get_position(self.board_location)
+class Block(boardpiece.BoardPiece):
+    def __init__(self, given_board_location, given_board, surface, color):
+
+        boardpiece.BoardPiece.__init__(self, given_board_location, given_board, surface)
         self.rect = pygame.Rect(0, 0, self.board.square_side, self.board.square_side)
         self.rect.topleft = self.position
-        self.surface = given_surface
         self.image = pygame.Surface((self.board.square_side, self.board.square_side))
+        self.color = color
+
+        self.draw_board_rect()
+
+        self.is_attacked = False
+
+        self.board.reserve_location(self.board_location, self)
+        self.draw()
     
-class IceBlock(Block):
-    def __init__(self, given_board_location, given_board, given_surface):
-        super(IceBlock, self).__init__(given_board_location, given_board, given_surface)
-        self.color = colors.LIGHT_BLUE
+    def draw_board_rect(self):
         pygame.draw.rect(self.image, self.color, pygame.Rect(0, 0, self.board.square_side, self.board.square_side))
         pygame.draw.rect(self.image, colors.BLACK, pygame.Rect(0, 0, self.board.square_side, self.board.square_side), 1)
+    
+    def set_attacked(self):
+        self.is_attacked = True
+class IceBlock(Block):
+    def __init__(self, given_board_location, given_board, surface):
+        Block.__init__(self, given_board_location, given_board, surface, colors.LIGHT_BLUE)
+    
+        
+class WallBlock(Block):
+    def __init__(self, given_board_location, given_board, surface):
+        Block.__init__(self, given_board_location, given_board, surface, colors.MED_BLUE)
