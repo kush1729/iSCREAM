@@ -13,12 +13,17 @@ class Movable(boardpiece.BoardPiece):
         self.draw()
 
     def move_to(self, new_location):
-        self.board.move(self.board_location, new_location)
+        while self.board.moving:
+            print 1
+        self.board.moving = True
+        self.board.move_if_clear(self.board_location, new_location)
+        self.board.moving = False
         self.board_location = new_location
         self.update()
+        self.draw()
     
     def update(self):
         self.position = self.board.get_position(self.board_location)
         self.rect.topleft = self.position
-        self.board.update_callback(pygame.Rect(self.rect.topleft, (self.board.square_side, self.board.square_side)))
         self.draw()
+        pygame.display.update(self.rect)
