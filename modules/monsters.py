@@ -10,8 +10,6 @@ class Monster(movable.Movable):
             for location in self.point_feed:
                 time.sleep(self.delay)
                 self.move_to(location)
-                self.update()
-                self.draw()
         move_scheduler = threading.Timer(0, mover)
         move_scheduler.start()
 
