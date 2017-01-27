@@ -251,22 +251,9 @@ class RandomMonster:
         if self.frozen == True: return
         r = choice(range(100))
         x, y = self.loc
-##        if r == 3: #keep the monster chasing only for sometime 
-##            move = [0, 0]
-##            dx = player.loc[0] - x
-##            dy = player.loc[1] - y    
-##            if abs(dx) <= abs(dy):
-##                if dy < 0: move[1] -= 1
-##                else: move[1] += 1
-##            if cells.walls[x+move[0]][y+move[1]] != False or abs(dx) >= abs(dy):
-##                if dx < 0: move[0] -= 1
-##                else: move[0] += 1
-##            if cells.walls[x+move[0]][y+move[1]] == False and move != [0, 0]:
-##                self.loc = [x + move[0], y + move[1]]
-##                return
-        #if the designated block is non empty then move randomly
         free = [[i, j] for i, j in ((x-1, y), (x, y+1), (x+1, y), (x, y-1)) if cells.walls[i][j] == False]
-        self.loc = choice(free)
+        if not free: self.frozen = True
+        else: self.loc = choice(free)
             
 
 class ChasingMonster:
