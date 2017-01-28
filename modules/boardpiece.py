@@ -14,3 +14,4 @@ class BoardPiece(pygame.sprite.Sprite):
     
     def draw(self):
         self.screen.blit(self.image, self.position)
+        pygame.display.update(self.rect)
