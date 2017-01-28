@@ -28,7 +28,7 @@ class Game(object):
 
         pygame.display.flip()
         try:
-            while self.not_suspended:
+            while self.not_suspended and user.is_alive:
                 clock.tick(30)
 
                 for event in pygame.event.get():
