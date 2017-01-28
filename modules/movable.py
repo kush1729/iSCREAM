@@ -2,6 +2,10 @@ import boardpiece
 
 import pygame
 
+from threading import Lock
+
+mutex = Lock()
+
 class Movable(boardpiece.BoardPiece):
     def __init__(self, given_board_location, given_board, surface, given_image_string):
         boardpiece.BoardPiece.__init__(self, given_board_location, given_board, surface)
@@ -13,12 +17,13 @@ class Movable(boardpiece.BoardPiece):
         self.draw()
 
     def move_to(self, new_location):
-        while self.board.moving:
-            print 1
-        self.board.moving = True
-        self.board.move_if_clear(self.board_location, new_location)
-        self.board.moving = False
-        self.board_location = new_location
+        mutex.acquire()
+        try:
+            if self.board.is_location_clear(self.tolerated_types, new_location):
+                self.board.move(self.board_location, new_location)
+                self.board_location = new_location
+        finally:
+            mutex.release()
         self.update()
         self.draw()
     

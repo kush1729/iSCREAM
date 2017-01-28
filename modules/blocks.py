@@ -24,6 +24,10 @@ class Block(boardpiece.BoardPiece):
     
     def set_attacked(self):
         self.is_attacked = True
+
+    def kill(self):
+        self.board.free_location(self.board_location)
+
 class IceBlock(Block):
     def __init__(self, given_board_location, given_board, surface):
         Block.__init__(self, given_board_location, given_board, surface, colors.LIGHT_BLUE)

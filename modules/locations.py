@@ -7,17 +7,8 @@ class Point(object):
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
     
-    def up(self):
-        return Point(self.x_coordinate, self.y_coordinate - 1)
-    
-    def down(self):
-        return Point(self.x_coordinate, self.y_coordinate + 1)
-    
-    def left(self):
-        return Point(self.x_coordinate - 1, self.y_coordinate)
-    
-    def right(self):
-        return Point(self.x_coordinate + 1, self.y_coordinate)
+    def __add__(self, displacement):
+        return Point(self.x_coordinate + displacement[0], self.y_coordinate + displacement[1])
     
     def __eq__(self, point):
         return point.x_coordinate == self.x_coordinate and point.y_coordinate == self.y_coordinate
