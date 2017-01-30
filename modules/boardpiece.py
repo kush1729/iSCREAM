@@ -11,6 +11,8 @@ class BoardPiece(pygame.sprite.Sprite):
 
         self.position = self.board.get_position(self.board_location)
         self.screen = screen
+
+        self.frozen = False
     
     def draw(self):
         self.screen.blit(self.image, self.position)
