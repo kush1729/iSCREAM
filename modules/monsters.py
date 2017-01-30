@@ -33,7 +33,7 @@ class Monster(movable.Movable):
 class PatrollingMonster(fixedpath.FixedPathFollower, Monster):
 
     def __init__(self, given_board_location, given_board, surface, given_path):
-        Monster.__init__(self, given_board_location, given_board, surface, ".\\images\\chasing.png")
+        Monster.__init__(self, given_board_location, given_board, surface, ".\\images\\patrolling.png")
         fixedpath.FixedPathFollower.__init__(self, given_path)
 
         self.delay = 0.1
