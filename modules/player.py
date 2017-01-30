@@ -21,12 +21,15 @@ class Player(Movable):
 		self.is_alive = True
 		self.tolerated_types = (fruits.Fruit,)
 		self.direction = (1, 0)
+		self.score = 0
 	
 	def handle_event(self, event):
 		if event.type == pygame.KEYDOWN:
 			try:
 				new_location = self.board_location + self.MOVE_MAP[event.key]
-				if self.board.is_of_type(new_location, fruits.Fruit):
+				if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit):
+					self.score += self.board[new_location].score
+					print self.score
 				self.move_to(new_location)
 				self.direction = self.MOVE_MAP[event.key]
 			except KeyError:
@@ -47,11 +50,11 @@ class Player(Movable):
 	def remove_ice(self):
 		ice_point = locations.Point.copy(self.board_location) + self.direction
 		while ice_point in self.board and self.board.is_of_type(ice_point, blocks.IceBlock):
-			self.board.grid[ice_point.y_coordinate][ice_point.x_coordinate].kill()
+			self.board[ice_point].kill()
 			ice_point += self.direction
 	
 	def shoot_ice(self):
 		ice_point = locations.Point.copy(self.board_location) + self.direction
-		while ice_point in self.board and self.board.is_empty(ice_point):
+		while ice_point in self.board and self.board.is_location_clear(self.tolerated_types, ice_point):
 			self.board.reserve_location(ice_point, blocks.IceBlock(ice_point, self.board, self.screen))
 			ice_point += self.direction
