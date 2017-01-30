@@ -1,6 +1,8 @@
 import pygame
 import colors
 import player
+import fruits
+import blocks
 from locations import Point
 
 class Board(object):
@@ -24,7 +26,10 @@ class Board(object):
     def is_location_clear(self, tolerated, location):
         try:
             if location in self:
-                return self[location] is None or any(isinstance(self[location], board_piece_type) for board_piece_type in tolerated)
+                return self[location] is None or any(isinstance(self[location], board_piece_type)\
+                for board_piece_type in tolerated)\
+                if not isinstance(self[location], fruits.Fruit)\
+                else not self[location].frozen
             else:
                 return False
         except IndexError:
@@ -51,6 +56,9 @@ class Board(object):
     
     def free_location(self, location):
         self[location] = None
+    
+    def is_frozen(self, location):
+        return self[location].frozen if self[location] is not None else False
 
 class GraphicalBoard(Board):
     
@@ -70,7 +78,7 @@ class GraphicalBoard(Board):
         X = 0
         Y = 1
         return (self.position[X] + location.x_coordinate * self.square_side,
-        self.position[Y] + location.y_coordinate * self.square_side)
+            self.position[Y] + location.y_coordinate * self.square_side)
     
     def move(self, from_point, to_point):
         Board.move(self, from_point, to_point)
@@ -87,3 +95,15 @@ class GraphicalBoard(Board):
         pygame.draw.rect(self.draw_surface, colors.SNOW, update_rect)
         pygame.draw.rect(self.draw_surface, colors.BLACK, update_rect, 1)
         pygame.display.update(update_rect)
+    
+    def freeze(self, location):
+        if isinstance(self[location], fruits.Fruit):
+            self[location].freeze()
+        else:
+            self[location] = blocks.IceBlock(location, self, self.draw_surface)
+    
+    def unfreeze(self, location):
+        if isinstance(self[location], fruits.Fruit):
+            self[location].unfreeze()
+        else:
+            self[location].kill()
