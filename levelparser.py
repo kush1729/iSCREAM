@@ -26,7 +26,9 @@ PLAYER  = 'player'
 board_piece_type = {
     'i': blocks.IceBlock,
     'w': blocks.WallBlock,
-    'a': fruits.Apple
+    'a': fruits.Apple,
+    'b': fruits.Banana,
+    'g': fruits.Grapes
 }
 
 character_map = {
@@ -45,7 +47,7 @@ def get_objects(board_position, square_side, board_surface):
         PLAYER: None
     }    
 
-    with open('.\\levels\\test.level.json') as level_file:
+    with open('.\\levels\\fruitstest.level.json') as level_file:
         level_data = json.loads(level_file.read())
     
     the_board = board.GraphicalBoard(level_data[BOARD_WIDTH],
