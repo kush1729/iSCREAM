@@ -27,7 +27,7 @@ class Player(Movable):
 		if event.type == pygame.KEYDOWN:
 			try:
 				new_location = self.board_location + self.MOVE_MAP[event.key]
-				if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit):
+				if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and self.board.is_location_clear(self.tolerated_types, new_location):
 					self.score += self.board[new_location].score
 					print self.score
 				self.move_to(new_location)
@@ -42,19 +42,19 @@ class Player(Movable):
 	def shoot(self):
 		ice_point = locations.Point.copy(self.board_location) + self.direction
 		if ice_point in self.board:
-			if self.board.is_of_type(ice_point, blocks.IceBlock):
+			if self.board.is_frozen(ice_point):
 				self.remove_ice()
 			else:
 				self.shoot_ice()
 	
 	def remove_ice(self):
 		ice_point = locations.Point.copy(self.board_location) + self.direction
-		while ice_point in self.board and self.board.is_of_type(ice_point, blocks.IceBlock):
-			self.board[ice_point].kill()
+		while ice_point in self.board and self.board.is_frozen(ice_point):
+			self.board.unfreeze(ice_point)
 			ice_point += self.direction
 	
 	def shoot_ice(self):
 		ice_point = locations.Point.copy(self.board_location) + self.direction
 		while ice_point in self.board and self.board.is_location_clear(self.tolerated_types, ice_point):
-			self.board.reserve_location(ice_point, blocks.IceBlock(ice_point, self.board, self.screen))
+			self.board.freeze(ice_point)
 			ice_point += self.direction
