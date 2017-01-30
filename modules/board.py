@@ -11,41 +11,46 @@ class Board(object):
 
     def __contains__(self, location):
         return 0 <= location.y_coordinate < len(self.grid) and 0 <= location.x_coordinate < len(self.grid[0])
+
+    def __getitem__(self, location):
+        return self.grid[location.y_coordinate][location.x_coordinate]
+    
+    def __setitem__(self, location, value):
+        self.grid[location.y_coordinate][location.x_coordinate] = value
     
     def start(self, player):
         self.player = player
 
     def is_location_clear(self, tolerated, location):
         try:
-            if location.x_coordinate >= 0 and location.y_coordinate >= 0:
-                return self.grid[location.y_coordinate][location.x_coordinate] is None \
-                or any(isinstance(self.grid[location.y_coordinate][location.x_coordinate], board_piece_type) for board_piece_type in tolerated)
+            if location in self:
+                return self[location] is None or any(isinstance(self[location], board_piece_type) for board_piece_type in tolerated)
             else:
                 return False
         except IndexError:
             return False
 
     def reserve_location(self, location, boardpiece):
-        self.grid[location.y_coordinate][location.x_coordinate] = boardpiece
+        self[location] = boardpiece
     
     def game_not_suspended(self):
         return self.player.is_alive
     
     def move(self, from_point, to_point):
-        self.grid[to_point.y_coordinate][to_point.x_coordinate] = self.grid[from_point.y_coordinate][from_point.x_coordinate]
-        self.grid[from_point.y_coordinate][from_point.x_coordinate] = None
+        self[to_point] = self[from_point]
+        self[from_point] = None
     
     def is_empty(self, location):
         return self.is_location_clear((), location)
  
     def is_of_type(self, location, type):
-        return isinstance(self.grid[location.y_coordinate][location.x_coordinate], type)
+        return isinstance(self[location], type)
     
     def is_player_at(self, location):
         return self.is_of_type(location, player.Player)
     
     def free_location(self, location):
-        self.grid[location.y_coordinate][location.x_coordinate] = None
+        self[location] = None
 
 class GraphicalBoard(Board):
     
