@@ -31,6 +31,7 @@ class Block(boardpiece.BoardPiece):
 class IceBlock(Block):
     def __init__(self, given_board_location, given_board, surface):
         Block.__init__(self, given_board_location, given_board, surface, colors.LIGHT_BLUE)
+        self.frozen = True
     
         
 class WallBlock(Block):
