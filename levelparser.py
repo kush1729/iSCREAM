@@ -22,7 +22,7 @@ CHASING_MONSTERS = 'chasingMonsters'
 ICE_BLOCKS = 'iceBlocks'
 WALL_BLOCKS = 'wallBlocks'
 POINTS = 'points'
-PLAYER  = 'player'
+PLAYER = 'player'
 
 board_piece_type = {
     'i': blocks.IceBlock,
@@ -37,7 +37,9 @@ character_map = {
     "w": WALL_BLOCKS
 }
 
+
 class Levelparser(object):
+
     def __init__(filename, board_position, surface, fruit_kill_callback):
         self.screen = surface
         self.wave_number = 0
@@ -45,12 +47,12 @@ class Levelparser(object):
 
         with open('.\\levels\\' + filename) as data_file:
             self.data = json.loads(data_file.read())
-        
+
         with open('.\\levels\\' + self.data[MAP_FILE]) as map_file:
             all_maps = map_file.read().split('\n\n')
             self.block_map = all_maps[0]
 
-            self.wave_maps = all_maps[1:] 
+            self.wave_maps = all_maps[1:]
 
         self.objects = {
             ICE_BLOCKS: [],
@@ -80,7 +82,7 @@ class Levelparser(object):
             for x, character in enumerate(line):
                 if character.lower() in board_piece_type:
                     callback(x, y, character
-    
+
     def set_ice_blocks(x, y, character):
         self.objects[character_map[character]].append(
             board_piece_type[character](
@@ -89,10 +91,10 @@ class Levelparser(object):
                 self.surface
             )
         )
-    
+
     def initiate_blocks(self):
         parse_map(self.block_map, set_ice_blocks)
-    
+
     def set_static_fruits(x, y, character):
         self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS].append(
             board_piece_type[character](

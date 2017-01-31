@@ -1,18 +1,19 @@
 import feeders
 
+
 class Point(object):
     __slots__ = ('x_coordinate', 'y_coordinate')
 
     def __init__(self, x_coordinate, y_coordinate):
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
-    
+
     def __add__(self, displacement):
         return Point(self.x_coordinate + displacement[0], self.y_coordinate + displacement[1])
-    
+
     def __eq__(self, point):
         return point.x_coordinate == self.x_coordinate and point.y_coordinate == self.y_coordinate
-    
+
     def __ne__(self, point):
         return not self == point
 
@@ -22,8 +23,10 @@ class Point(object):
     def copy(point):
         return Point(point.x_coordinate, point.y_coordinate)
 
+
 class Line(object):
-    __slots__ = ('start', 'end', 'is_vertical', 'is_horizontal', 'direction', 'iterate_direction')
+    __slots__ = ('start', 'end', 'is_vertical', 'is_horizontal',
+                 'direction', 'iterate_direction')
 
     def __init__(self, start, end):
         self.start = start
@@ -38,6 +41,6 @@ class Line(object):
         elif self.start.y_coordinate == self.end.y_coordinate:
             self.is_horizontal = True
             self.direction = cmp(end.x_coordinate, start.x_coordinate)
-    
+
     def __repr__(self):
         return 'Line({point1}, {point2})'.format(point1=repr(self.start), point2=repr(self.end))

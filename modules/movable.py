@@ -6,10 +6,13 @@ from threading import Lock
 
 mutex = Lock()
 
+
 class Movable(boardpiece.BoardPiece):
+
     def __init__(self, given_board_location, given_board, surface, given_image_string):
-        boardpiece.BoardPiece.__init__(self, given_board_location, given_board, surface)
-        
+        boardpiece.BoardPiece.__init__(
+            self, given_board_location, given_board, surface)
+
         self.image = pygame.image.load(given_image_string).convert()
         self.rect = self.image.get_rect()
         self.update()
@@ -26,7 +29,7 @@ class Movable(boardpiece.BoardPiece):
             mutex.release()
         self.update()
         self.draw()
-    
+
     def update(self):
         self.position = self.board.get_position(self.board_location)
         self.rect.topleft = self.position
