@@ -60,6 +60,10 @@ PAUSE = pygame.K_p
 
 #GUI----------------------------
 
+def exitfunction():
+    pygame.quit()
+    exit(0)
+
 def button(text, x, y, width, height, inactiveColour, activeColour, action = None):
     global lvl_no
     cur = pygame.mouse.get_pos()
@@ -67,8 +71,7 @@ def button(text, x, y, width, height, inactiveColour, activeColour, action = Non
     if x + width > cur[0] > x and y + height > cur[1] > y:
         if click[0] == 1 and action != None:
             if action == 'quit':
-                pygame.quit()
-                quit()
+                exitfunction()
             if action == 'play':
                 levelSelect()
             if action == 'start':
@@ -1137,8 +1140,7 @@ def instructions():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                pygame.quit()
-                quit()
+                exitfunction()
         button('PLAY', 50, 500, 175, 75, green, light_green, 'play')
         button('QUIT', display_width - 225, 500, 175, 75, red, light_red, 'quit')
         pygame.display.update()
@@ -1182,8 +1184,7 @@ def gameEnd(won):
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                pygame.quit()
-                quit()
+                exitfunction()
         button(msg[0], 50, 400, 125, 125, green, light_green, msg[1])
         button('MAIN MENU', (display_width - 175)//2, 400, 175, 125, orange, yellow, 'start')
         button('QUIT', display_width - 175, 400, 125, 125, red, light_red, 'quit')
@@ -1200,8 +1201,7 @@ def gameStart():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                pygame.quit()
-                quit()
+                exitfunction()
         button('PLAY', 50, 350, 125, 125, green, light_green, 'play')
         button('INSTRUCTIONS', (display_width - 175)//2, 350, 175, 125, orange, yellow, 'instruct')
         button('QUIT', display_width - 175, 350, 125, 125, red, light_red, 'quit')
@@ -1217,8 +1217,7 @@ def levelSelect():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                pygame.quit()
-                quit()
+                exitfunction()
         row = 150
         btnSize = 80
         gap = 32
@@ -1242,8 +1241,7 @@ def gameLoop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                pygame.quit()
-                exit(0)
+                exitfunction()
             if event.type == pygame.KEYDOWN:
                 if event.key == SHOOT and not pause:
                     player.shoot()
@@ -1269,9 +1267,8 @@ def gameLoop():
             if f != None:
                 f.draw()
                 f.freeze()  #unnecessary if all images have transparent background
-            levels[lvl_no - 1].moveFruits()
-        except:
-            pass
+            try: levels[lvl_no - 1].moveFruits()
+            except: pass
         for m in monsters: m.draw()
         player.draw()
         time_count += 1
