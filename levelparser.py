@@ -1,5 +1,6 @@
-import sys
 import json
+
+import sys
 sys.path.append('.\\modules')
 
 import board
@@ -36,65 +37,73 @@ character_map = {
     "w": WALL_BLOCKS
 }
 
-def get_objects(board_position, square_side, board_surface):
-    return_data = {
-        BOARD: None,
-        ICE_BLOCKS: [],
-        WALL_BLOCKS: [],
-        FRUIT_WAVES: [],
-        PATROLLING_MONSTERS: [],
-        CHASING_MONSTERS: [],
-        PLAYER: None
-    }    
+class Levelparser(object):
+    def __init__(filename, board_position, surface, fruit_kill_callback):
+        self.screen = surface
+        self.wave_number = 0
+        self.fruit_kill_callback = fruit_kill_callback
 
-    with open('.\\levels\\fruitstest.level.json') as level_file:
-        level_data = json.loads(level_file.read())
-    
-    the_board = board.GraphicalBoard(level_data[BOARD_WIDTH],
-    level_data[BOARD_HEIGHT],
-    board_position, board_surface)
+        with open('.\\levels\\' + filename) as data_file:
+            self.data = json.loads(data_file.read())
+        
+        with open('.\\levels\\' + self.data[MAP_FILE]) as map_file:
+            all_maps = map_file.read().split('\n\n')
+            self.block_map = all_maps[0]
 
-    return_data[PLAYER] = player.Player(locations.Point(*level_data[PLAYER]), the_board, board_surface)
+            self.wave_maps = all_maps[1:] 
 
-    return_data[PATROLLING_MONSTERS] = [
-        monsters.PatrollingMonster(
-            locations.Point(*monsterdata[POINTS][0]),
+        self.objects = {
+            ICE_BLOCKS: [],
+            WALL_BLOCKS: [],
+            FRUIT_WAVES: [],
+            PATROLLING_MONSTERS: [],
+            CHASING_MONSTERS: [],
+        }
+
+        self.board = board.GraphicalBoard(
+            self.data[BOARD_WIDTH],
+            self.data[BOARD_HEIGHT],
+            board_position,
+            self.screen
+        )
+
+        self.objects[BOARD] = self.board
+        self.objects[PLAYER] = player.Player(
+            locations.Point(*self.data[PLAYER]),
             the_board,
-            board_surface,
-            [locations.Point(x, y) for x, y in monsterdata[POINTS]]
-        ) for monsterdata in level_data[PATROLLING_MONSTERS]]
+            board_surface
+        )
 
-    def parse_map(callback):
-        for y in xrange(level_data[BOARD_HEIGHT]):
+    def parse_map(map, callback):
+        for y in xrange(self.data[BOARD_HEIGHT]):
             line = map.readline().strip()
             for x, character in enumerate(line):
-                if character.islower():
-                    callback(x, y, character)
-
-    with open('.\\levels\\' + level_data[MAP_FILE]) as map:
-        def set_ice_blocks(x, y, character):
-            return_data[character_map[character]].append(board_piece_type[character](locations.Point(x, y), the_board, board_surface))
-        
-        parse_map(set_ice_blocks)
-
-        for wave in level_data[FRUIT_WAVES]:
-            map.readline()
-            
-            wave_data = {
-                STATIC_FRUITS: [],
-                MOVING_FRUITS: []
-            }
-
-            def set_static_fruits(x, y, character):
-                wave_data[STATIC_FRUITS].append(board_piece_type[character](locations.Point(x, y), the_board, board_surface))
-
-            parse_map(set_static_fruits)
-
-            return_data[FRUIT_WAVES].append(wave_data)
+                if character.lower() in board_piece_type:
+                    callback(x, y, character
     
-    return_data[BOARD] = the_board
-    return return_data
+    def set_ice_blocks(x, y, character):
+        self.objects[character_map[character]].append(
+            board_piece_type[character](
+                locations.Point(x, y),
+                self.board,
+                self.surface
+            )
+        )
+    
+    def initiate_blocks(self):
+        parse_map(self.block_map, set_ice_blocks)
+    
+    def set_static_fruits(x, y, character):
+        self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS].append(
+            board_piece_type[character](
+                locations.Point(x, y),
+                self.board,
+                self.surface,
+                character.isupper(),
+                self.fruit_kill_callback
+            )
+        )
 
-if __name__ == '__main__':
-    pass
-        
+    def next_fruit_wave(self):
+        self.wave_number += 1
+        parse_map(self.wave_maps[self.wave_number], set_static_fruits)
