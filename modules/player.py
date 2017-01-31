@@ -27,7 +27,8 @@ class Player(Movable):
 		if event.type == pygame.KEYDOWN:
 			try:
 				new_location = self.board_location + self.MOVE_MAP[event.key]
-				if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and self.board.is_location_clear(self.tolerated_types, new_location):
+				if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and not self.board.is_frozen(new_location):
+					self.board[new_location].kill()
 					self.score += self.board[new_location].score
 					print self.score
 				self.move_to(new_location)
