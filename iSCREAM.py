@@ -39,8 +39,9 @@ wall_loc = [(0, x) for x in range(numCols)] + [(x, 0) for x in range(numRows)]
 wall_loc += [(numRows - 1, x) for x in range(numCols)] + [(x, numCols - 1) for x in range(numRows)]
 wall_loc = list(set(wall_loc))
 
-display_width = display_height = 595    #17 divides 595, to make block size 35x35 pixels. Preferably do not change.
-pygame.display.set_caption('iScream')
+display_height =  595    #17 divides 595, to make block size 35x35 pixels. Preferably do not change.
+display_width = display_height 
+pygame.display.set_caption('iSCREAM')
 pygame.display.set_icon(pygame.image.load('icon.jpg'))
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 gameDisplay.fill(snow)
@@ -405,14 +406,10 @@ class Fruit:
     loc = [0, 1]
     frozen = False   #This is for fruits that move (eg strawberry), so that if they get stuck in walls they will stop moving
     clockwise = True  #This is for the strawberry which goes about a given path
-    #note: the frozen counterparts are for images that don't have a transparent background.
-    #if all images get a frozen background, then freeze() function is rendered useless
-    #freeze function is just there to ensure that it is possible to see that the fruit is stuck in ice
-    apple = pygame.image.load('apple.jpg')
+    apple = pygame.image.load('apple.png')
     banana = pygame.image.load('banana.png') #no need new image with blue background as current image has transparent background
     grape = pygame.image.load('grapes.png')
     strawberry = pygame.image.load('strawberry.png')
-    frozen_apple = pygame.image.load('frozen_apple.jpg')
     image = apple
     
     def __init__(self, typ = 'apple'):
@@ -424,17 +421,6 @@ class Fruit:
     def draw(self):
         gameDisplay.blit(self.image, (self.loc[0] * self.size[0] + 1, self.loc[1] * self.size[1] + 1))
 
-    #specific functions can be made governing the movement, appearance, and any other property of special fruits.
-    #preferably any new fruit should not have its own class, as it would become slightly difficult for initialization of fruits in the creation of new level
-    
-    def freeze(self):
-        '''This is required only for moving fruits'''
-        if cells.walls[self.loc[0]][self.loc[1]] == 'ice':
-            if self.image == self.apple: self.image = self.frozen_apple
-            self.frozen = True
-        else:
-            if self.image == self.frozen_apple: self.image = self.apple
-            self.frozen = False
 
 '''LEVEL CREATOR:
 Every level should have a class object
@@ -1121,17 +1107,18 @@ gridLoc = [[(x*cells.size[0], y*cells.size[1]) for y in range(numCols)] for x in
 player = Sprite()
 
 def instructions():
+    pygame.display.set_caption('iSCREAM -INSTRUCTIONS')
     key_dict = {pygame.K_UP:'UP ARROW KEY', pygame.K_DOWN:'DOWN ARROW KEY', pygame.K_LEFT:'LEFT ARROW KEY',
                 pygame.K_RIGHT:'RIGHT ARROW KEY', pygame.K_SPACE:'SPACE', pygame.K_p:'P', pygame.K_w: 'W',
                 pygame.K_a: 'A', pygame.K_s: 'S', pygame.K_d: 'D', pygame.K_END: 'END'}
     gameDisplay.fill(snow)
-    message_to_screen('INSTRUCTIONS', chocolate, (display_width//2, 25) , 'med-large')
-    message_to_screen('MOVE LEFT:- '+key_dict[MOVE_LEFT], med_blue, (display_width//2, 100), 'small')
-    message_to_screen('MOVE RIGHT:- '+key_dict[MOVE_RIGHT], med_blue, (display_width//2, 150), 'small')
-    message_to_screen('MOVE UP:- '+key_dict[MOVE_UP], med_blue, (display_width//2, 200), 'small')
-    message_to_screen('MOVE DOWN:- '+key_dict[MOVE_DOWN], med_blue, (display_width//2, 250), 'small')
-    message_to_screen('SHOOT/BREAK ICE:- '+key_dict[SHOOT], med_blue, (display_width//2, 300), 'small')
-    message_to_screen('PAUSE:- '+key_dict[PAUSE], med_blue, (display_width//2, 350), 'small')
+    message_to_screen('INSTRUCTIONS', chocolate, (display_width//2, 65) , 'med-large')
+    message_to_screen('MOVE LEFT:- '+key_dict[MOVE_LEFT], med_blue, (display_width//2, 150), 'small')
+    message_to_screen('MOVE RIGHT:- '+key_dict[MOVE_RIGHT], med_blue, (display_width//2, 190), 'small')
+    message_to_screen('MOVE UP:- '+key_dict[MOVE_UP], med_blue, (display_width//2, 230), 'small')
+    message_to_screen('MOVE DOWN:- '+key_dict[MOVE_DOWN], med_blue, (display_width//2, 270), 'small')
+    message_to_screen('SHOOT/BREAK ICE:- '+key_dict[SHOOT], med_blue, (display_width//2, 310), 'small')
+    message_to_screen('PAUSE:- '+key_dict[PAUSE], med_blue, (display_width//2, 360), 'small')
     message_to_screen('AVOID THE MONSTERS AND GET ALL THE FRUITS', med_blue, (display_width//2, 400), 'small')
     message_to_screen('TO COMPLETE THE LEVEL!', med_blue, (display_width//2, 435), 'small')
     pygame.display.update()
@@ -1157,6 +1144,7 @@ def reset():    #clear out grid at the end of every level
     
 def gameEnd(won):
     reset()
+    pygame.display.set_caption('iSCREAM')
     
     #Find Time Taken to complete level
     endTime = int(time() - levels[lvl_no - 1].startTime)
@@ -1192,6 +1180,7 @@ def gameEnd(won):
         clock.tick(FPS)
 
 def gameStart():
+    pygame.display.set_caption('iSCREAM')
     gameDisplay.fill(snow)
     message_to_screen('WELCOME TO', light_red, (display_width//2, 75) , 'medium')
     message_to_screen('iSCREAM', chocolate, (display_width//2, 175), 'x-large')
@@ -1209,6 +1198,7 @@ def gameStart():
         clock.tick(FPS)
 
 def levelSelect():
+    pygame.display.set_caption('iSCREAM - LEVEL SELECTION')
     gameDisplay.fill(snow)
     message_to_screen('CHOOSE LEVEL', light_red, (display_width//2, 75) , 'medium')
     pygame.display.update()
@@ -1235,6 +1225,7 @@ def levelSelect():
         clock.tick(FPS)
 
 def gameLoop():
+    pygame.display.set_caption('iSCREAM - LEVEL %d'%(lvl_no))
     pause = False
     time_count = 0  #keep track of time elapsed for timed events like breaking of walls etc
     while True:
@@ -1266,7 +1257,6 @@ def gameLoop():
         for f in fruits:
             if f != None:
                 f.draw()
-                f.freeze()  #unnecessary if all images have transparent background
             try: levels[lvl_no - 1].moveFruits()
             except: pass
         for m in monsters: m.draw()
