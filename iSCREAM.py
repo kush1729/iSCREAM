@@ -1122,13 +1122,15 @@ def instructions():
                 pygame.K_RIGHT:'RIGHT ARROW KEY', pygame.K_SPACE:'SPACE', pygame.K_p:'P', pygame.K_w: 'W',
                 pygame.K_a: 'A', pygame.K_s: 'S', pygame.K_d: 'D', pygame.K_END: 'END'}
     gameDisplay.fill(snow)
-    message_to_screen('INSTRUCTIONS', chocolate, (display_width//2, 50) , 'med-large')
-    message_to_screen('MOVE LEFT:- '+key_dict[MOVE_LEFT], med_blue, (display_width//2, 150), 'small')
-    message_to_screen('MOVE RIGHT:- '+key_dict[MOVE_RIGHT], med_blue, (display_width//2, 200), 'small')
-    message_to_screen('MOVE UP:- '+key_dict[MOVE_UP], med_blue, (display_width//2, 250), 'small')
-    message_to_screen('MOVE DOWN:- '+key_dict[MOVE_DOWN], med_blue, (display_width//2, 300), 'small')
-    message_to_screen('SHOOT/BREAK ICE:- '+key_dict[SHOOT], med_blue, (display_width//2, 350), 'small')
-    message_to_screen('PAUSE:- '+key_dict[PAUSE], med_blue, (display_width//2, 400), 'small')
+    message_to_screen('INSTRUCTIONS', chocolate, (display_width//2, 25) , 'med-large')
+    message_to_screen('MOVE LEFT:- '+key_dict[MOVE_LEFT], med_blue, (display_width//2, 100), 'small')
+    message_to_screen('MOVE RIGHT:- '+key_dict[MOVE_RIGHT], med_blue, (display_width//2, 150), 'small')
+    message_to_screen('MOVE UP:- '+key_dict[MOVE_UP], med_blue, (display_width//2, 200), 'small')
+    message_to_screen('MOVE DOWN:- '+key_dict[MOVE_DOWN], med_blue, (display_width//2, 250), 'small')
+    message_to_screen('SHOOT/BREAK ICE:- '+key_dict[SHOOT], med_blue, (display_width//2, 300), 'small')
+    message_to_screen('PAUSE:- '+key_dict[PAUSE], med_blue, (display_width//2, 350), 'small')
+    message_to_screen('AVOID THE MONSTERS AND GET ALL THE FRUITS', med_blue, (display_width//2, 400), 'small')
+    message_to_screen('TO COMPLETE THE LEVEL!', med_blue, (display_width//2, 435), 'small')
     pygame.display.update()
     sleep(0.2)
     while True:
@@ -1137,8 +1139,8 @@ def instructions():
                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 pygame.quit()
                 quit()
-        button('PLAY', 50, 450, 225, 125, green, light_green, 'play')
-        button('QUIT', display_width - 275, 450, 225, 125, red, light_red, 'quit')
+        button('PLAY', 50, 500, 175, 75, green, light_green, 'play')
+        button('QUIT', display_width - 225, 500, 175, 75, red, light_red, 'quit')
         pygame.display.update()
         clock.tick(FPS)
 
@@ -1243,21 +1245,10 @@ def gameLoop():
                 pygame.quit()
                 exit(0)
             if event.type == pygame.KEYDOWN:
-##                horizontal_moves = 0
-##                vertical_moves = 0
                 if event.key == SHOOT and not pause:
                     player.shoot()
                 elif event.key == PAUSE:
                     pause = not pause
-##                elif event.key == MOVE_RIGHT:
-##                    horizontal_moves += 1
-##                elif event.key == MOVE_LEFT:
-##                    horizontal_moves -= 1
-##                elif event.key == MOVE_DOWN:
-##                    vertical_moves += 1
-##                elif event.key == MOVE_UP:
-##                    vertical_moves -= 1
-##                player.move(horizontal_moves, vertical_moves)
         if pause: continue #prevent any movement when paused
         keystate = pygame.key.get_pressed()
         player.move((keystate[MOVE_RIGHT] - keystate[MOVE_LEFT]), (keystate[MOVE_DOWN] - keystate[MOVE_UP]))
@@ -1278,10 +1269,6 @@ def gameLoop():
             if f != None:
                 f.draw()
                 f.freeze()  #unnecessary if all images have transparent background
-        try:
-##            for f in fruits:  #when remove the above codeline, then uncomment this
-##                if f.image == Fruit.strawberry:
-##                    f.freeze()
             levels[lvl_no - 1].moveFruits()
         except:
             pass
