@@ -1,10 +1,12 @@
 import movable
 from feeders import PointFeeder
 
+
 class FixedPathFollower(movable.Movable):
+
     def __init__(self, given_path):
         self.path = given_path
-    
+
     def get_path(self):
         feeder = PointFeeder(self.path)
         direction = 1
