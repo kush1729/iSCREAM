@@ -1,7 +1,8 @@
 import boardpiece
 import pygame
 import colors
-
+import time
+import threading
 
 class Block(boardpiece.BoardPiece):
 
@@ -18,7 +19,7 @@ class Block(boardpiece.BoardPiece):
 
         self.draw_board_rect()
 
-        self.is_attacked = False
+        self.dead = False
 
         self.board.reserve_location(self.board_location, self)
         self.draw()
@@ -28,12 +29,32 @@ class Block(boardpiece.BoardPiece):
             0, 0, self.board.square_side, self.board.square_side))
         pygame.draw.rect(self.image, colors.BLACK, pygame.Rect(
             0, 0, self.board.square_side, self.board.square_side), 1)
+        self.draw()
 
     def set_attacked(self):
         self.is_attacked = True
 
     def kill(self):
         self.board.free_location(self.board_location)
+        self.dead = True
+    
+    def melt(self):
+        def melt_flasher():
+            color_index = 0
+            flash_colors = [colors.RED, self.color]
+
+            for i in xrange(20):
+                if not self.dead:
+                    time.sleep(0.1)
+                    self.color = flash_colors[color_index]
+                    color_index = (color_index + 1) % 2
+                    self.draw_board_rect()
+                else:
+                    break
+            
+            self.kill()
+        melt_scheduler = threading.Timer(0, melt_flasher)
+        melt_scheduler.start()
 
 
 class IceBlock(Block):
