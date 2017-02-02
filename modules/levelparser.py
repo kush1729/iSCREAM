@@ -16,6 +16,7 @@ BOARD_WIDTH = 'boardWidth'
 FRUIT_WAVES = 'fruitWaves'
 STATIC_FRUITS = 'staticFruits'
 MOVING_FRUITS = 'movingFruits'
+STRAWBERRIES = 'strawberries'
 PATROLLING_MONSTERS = 'patrollingMonsters'
 CHASING_MONSTERS = 'chasingMonsters'
 ICE_BLOCKS = 'iceBlocks'
@@ -48,7 +49,7 @@ class Levelparser(object):
             self.data = json.loads(data_file.read())
 
         with open('.\\levels\\' + self.data[MAP_FILE]) as map_file:
-            all_maps = map_file.read().split('\n\n')
+            all_maps = map_file.read().strip().split('\n\n')
             self.block_map = all_maps[0]
 
             self.wave_maps = all_maps[1:]
@@ -80,7 +81,7 @@ class Levelparser(object):
             locations.Point(*monsterdata[POINTS][0]),
             self.board,
             self.screen,
-            [locations.Point(x, y) for x, y in monsterdata[POINTS]]
+            [locations.Point(*point) for point in monsterdata[POINTS]]
         ) for monsterdata in self.data[PATROLLING_MONSTERS]]
 
         self.objects[CHASING_MONSTERS] = [
@@ -126,6 +127,16 @@ class Levelparser(object):
             {STATIC_FRUITS: [], MOVING_FRUITS: []})
         self.parse_map(
             self.wave_maps[self.wave_number], self.set_static_fruits)
+        
+        self.objects[FRUIT_WAVES][self.wave_number][MOVING_FRUITS] = [
+            fruits.Strawberry(
+                locations.Point(*strawberry_data[0]),
+                self.board,
+                self.screen,
+                self.fruit_kill_callback,
+                [locations.Point(*point) for point in strawberry_data]
+            ) for strawberry_data in self.data[FRUIT_WAVES][self.wave_number][STRAWBERRIES]
+        ]
 
     def get_current_wave_size(self):
         return len(self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS]) \
