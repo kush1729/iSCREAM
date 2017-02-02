@@ -29,14 +29,17 @@ class Player(Movable):
             try:
                 new_location = self.board_location + self.MOVE_MAP[event.key]
                 if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and not self.board.is_frozen(new_location):
-                    self.board[new_location].kill()
-                    self.score += self.board[new_location].score
-                    print self.score
+                    self.eat(self.board[new_location])
                 self.move_to(new_location)
                 self.direction = self.MOVE_MAP[event.key]
             except KeyError:
                 if event.key == pygame.K_SPACE:
                     self.shoot()
+    
+    def eat(self, fruit):
+        fruit.kill()
+        self.score += fruit.score
+        print self.score
 
     def kill(self):
         self.is_alive = False
