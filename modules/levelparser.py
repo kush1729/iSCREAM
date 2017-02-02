@@ -1,7 +1,6 @@
 import json
 
 import sys
-sys.path.append('.\\modules')
 
 import board
 import blocks
@@ -40,9 +39,9 @@ character_map = {
 
 class Levelparser(object):
 
-    def __init__(filename, board_position, surface, fruit_kill_callback):
+    def __init__(self, filename, board_position, surface, fruit_kill_callback):
         self.screen = surface
-        self.wave_number = 0
+        self.wave_number = -1
         self.fruit_kill_callback = fruit_kill_callback
 
         with open('.\\levels\\' + filename) as data_file:
@@ -69,38 +68,53 @@ class Levelparser(object):
             self.screen
         )
 
-        self.objects[BOARD] = self.board
-        self.objects[PLAYER] = player.Player(
+        self.player = player.Player(
             locations.Point(*self.data[PLAYER]),
-            the_board,
-            board_surface
+            self.board,
+            self.screen
         )
+    
+    def initiate_monsters(self):
+        self.objects[PATROLLING_MONSTERS] = [
+        monsters.PatrollingMonster(
+            locations.Point(*monsterdata[POINTS][0]),
+            self.board,
+            self.screen,
+            [locations.Point(x, y) for x, y in monsterdata[POINTS]]
+        ) for monsterdata in self.data[PATROLLING_MONSTERS]]
 
-    def parse_map(map, callback):
-        for y in xrange(self.data[BOARD_HEIGHT]):
-            line = map.readline().strip()
+        self.objects[CHASING_MONSTERS] = [
+            monsters.ChasingMonster(
+                locations.Point(*location),
+                self.board,
+                self.screen
+            ) for location in self.data[CHASING_MONSTERS]
+        ]
+
+    def parse_map(self, map, callback):
+        for y, line in enumerate(map.split()):
             for x, character in enumerate(line):
                 if character.lower() in board_piece_type:
-                    callback(x, y, character
+                    callback(x, y, character)
 
-    def set_ice_blocks(x, y, character):
+    def set_ice_blocks(self, x, y, character):
         self.objects[character_map[character]].append(
             board_piece_type[character](
                 locations.Point(x, y),
                 self.board,
-                self.surface
+                self.screen
             )
         )
 
     def initiate_blocks(self):
-        parse_map(self.block_map, set_ice_blocks)
+        self.parse_map(self.block_map, self.set_ice_blocks)
 
-    def set_static_fruits(x, y, character):
+    def set_static_fruits(self, x, y, character):
         self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS].append(
-            board_piece_type[character](
+            board_piece_type[character.lower()](
                 locations.Point(x, y),
                 self.board,
-                self.surface,
+                self.screen,
                 character.isupper(),
                 self.fruit_kill_callback
             )
@@ -108,4 +122,11 @@ class Levelparser(object):
 
     def next_fruit_wave(self):
         self.wave_number += 1
-        parse_map(self.wave_maps[self.wave_number], set_static_fruits)
+        self.objects[FRUIT_WAVES].append(
+            {STATIC_FRUITS: [], MOVING_FRUITS: []})
+        self.parse_map(
+            self.wave_maps[self.wave_number], self.set_static_fruits)
+
+    def get_current_wave_size(self):
+        return len(self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS]) \
+            + len(self.objects[FRUIT_WAVES][self.wave_number][MOVING_FRUITS])
