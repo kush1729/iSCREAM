@@ -92,8 +92,7 @@ class GraphicalBoard(Board):
 
     def draw_board_rect(self, location):
         update_rect = pygame.Rect(self.position[0] + location.x_coordinate * self.square_side,
-                                  self.position[
-                                      1] + location.y_coordinate * self.square_side,
+                                  self.position[1] + location.y_coordinate * self.square_side,
                                   self.square_side, self.square_side)
         pygame.draw.rect(self.draw_surface, colors.SNOW, update_rect)
         pygame.draw.rect(self.draw_surface, colors.BLACK, update_rect, 1)
