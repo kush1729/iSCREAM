@@ -53,7 +53,7 @@ class ChaserAndBreaker(movable.Movable):
                 else:
                     if isinstance(self.board[new_y_location], blocks.Block):
                         self.start_melt(new_y_location)
-                    elif isinstance(self.board[new_y_location], blocks.Block):
+                    elif isinstance(self.board[new_x_location], blocks.Block):
                         self.start_melt(new_x_location)
                     yield self.board_location
             else:
