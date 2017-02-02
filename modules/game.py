@@ -9,15 +9,18 @@ import colors
 
 class Game(object):
 
-    def __init__(self):
+    def __init__(self, file_name):
         self.screen = pygame.display.set_mode((525, 525))
 
         def fruit_kill_function():
             self.num_fruits -= 1
-            if self.num_fruits == 0:
-                self.next_wave()
+            try:
+                if self.num_fruits == 0:
+                    self.next_wave()
+            except IndexError:
+                self.not_suspended = False
 
-        self.dataparser = levelparser.Levelparser('monstertest.level.json', (0, 0), self.screen, fruit_kill_function)
+        self.dataparser = levelparser.Levelparser(file_name, (0, 0), self.screen, fruit_kill_function)
         self.not_suspended = True
         self.num_fruits = 0
 
@@ -32,7 +35,9 @@ class Game(object):
 
         clock = pygame.time.Clock()
 
-        for movable in itertools.chain(self.dataparser.objects[levelparser.PATROLLING_MONSTERS], self.dataparser.objects[levelparser.CHASING_MONSTERS]):
+        for movable in itertools.chain(self.dataparser.objects[levelparser.PATROLLING_MONSTERS],
+            self.dataparser.objects[levelparser.CHASING_MONSTERS],
+            self.dataparser.objects[levelparser.FRUIT_WAVES][self.dataparser.wave_number][levelparser.MOVING_FRUITS]):
             movable.activate()
 
         pygame.display.flip()
