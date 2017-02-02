@@ -3,7 +3,6 @@ import fruits
 import blocks
 import pygame
 import locations
-import directions
 
 
 class Player(Movable):
