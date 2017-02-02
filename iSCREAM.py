@@ -1225,10 +1225,17 @@ def levelSelect():
         clock.tick(FPS)
 
 def gameLoop():
-    pygame.display.set_caption('iSCREAM - LEVEL %d'%(lvl_no))
     pause = False
     time_count = 0  #keep track of time elapsed for timed events like breaking of walls etc
     while True:
+        #display time taken in the level
+        endTime = int(time() - levels[lvl_no - 1].startTime)
+        minute = endTime // 60
+        seconds = endTime % 60
+        if 10 > seconds >= 0: seconds = '0'+str(seconds)
+        else: seconds = str(seconds)
+        pygame.display.set_caption('iSCREAM-LVL%d %d:%s'%(lvl_no, minute, seconds))
+        #Actual Game Logic
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
