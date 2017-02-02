@@ -1,5 +1,5 @@
 import movable
-import fixedpath
+import paths
 import threading
 import time
 import player
@@ -35,15 +35,22 @@ class Monster(movable.Movable):
         move_scheduler.start()
 
 
-class PatrollingMonster(fixedpath.FixedPathFollower, Monster):
+class PatrollingMonster(paths.FixedPathFollower, Monster):
 
     def __init__(self, given_board_location, given_board, surface, given_path):
         Monster.__init__(self, given_board_location, given_board,
                          surface, ".\\images\\patrolling.png")
-        fixedpath.FixedPathFollower.__init__(self, given_path)
+        paths.FixedPathFollower.__init__(self, given_path)
 
         self.delay = 0.1
 
 
-class ChasingMonster(Monster):
-    pass
+class ChasingMonster(paths.ChaserAndBreaker, Monster):
+
+    def __init__(self, given_board_location, given_board, surface):
+        Monster.__init__(self, given_board_location, given_board,
+                         surface, ".\\images\\chasing.png")
+        paths.ChaserAndBreaker.__init__(self)
+        
+        self.delay = 1
+
