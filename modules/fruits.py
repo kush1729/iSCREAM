@@ -95,7 +95,7 @@ class Apple(Fruit):
 
     def __init__(self, given_board_location, given_board, surface, frozen, fruit_kill_callback):
         Fruit.__init__(self, given_board_location, given_board, surface,
-                       25, ".\\images\\apple.jpg", frozen, fruit_kill_callback)
+                       25, ".\\images\\apple.png", frozen, fruit_kill_callback)
 
 
 class Banana(Fruit):
