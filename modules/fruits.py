@@ -2,7 +2,9 @@ import boardpiece
 import pygame
 import fixedpath
 import colors
-
+import threading
+import time
+import player
 
 class Fruit(boardpiece.BoardPiece):
 
@@ -21,6 +23,7 @@ class Fruit(boardpiece.BoardPiece):
         self.draw()
 
         self.frozen = frozen
+        self.alive = True
 
         self.kill_callback = fruit_kill_callback
 
@@ -49,15 +52,43 @@ class Fruit(boardpiece.BoardPiece):
             self.position, (self.board.square_side, self.board.square_side)))
 
     def kill(self):
+        self.alive = False
+        self.board.draw_board_rect(self.board_location)
         self.kill_callback()
 
+mutex = threading.Lock()
 
 class Strawberry(Fruit, fixedpath.FixedPathFollower):
 
-    def __init__(self, given_board_location, given_board, surface, given_score, frozen, fruit_kill_callback, given_path):
+    def __init__(self, given_board_location, given_board, surface, fruit_kill_callback, given_path):
         Fruit.__init__(self, given_board_location, given_board, surface,
-                       200, ".\\images\\strawberry.png", frozen, fruit_kill_callback)
-        fixedpath.FixedPathFollower.__init__(given_path)
+                       200, ".\\images\\strawberry.png", False, fruit_kill_callback)
+        fixedpath.FixedPathFollower.__init__(self, given_path)
+        
+        self.tolerated_types = (player.Player,)
+
+        self.delay = 0.1
+    
+    def activate(self):
+        self.point_feed = self.get_path()
+
+        def mover():
+            while self.alive:
+                time.sleep(self.delay)
+                try:
+                    mutex.acquire()
+                    try:
+                        location = self.point_feed.next()
+                        if self.board.is_of_type(location, player.Player):
+                            self.board.player.eat(self)
+                            break
+                        self.move_to(location)
+                    finally:
+                        mutex.release()
+                except StopIteration:
+                    break
+        move_scheduler = threading.Timer(0, mover)
+        move_scheduler.start()
 
 
 class Apple(Fruit):
