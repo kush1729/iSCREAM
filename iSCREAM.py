@@ -1,9 +1,8 @@
-'''This game is an arcade game played in a 17x17 grid (though the outer row/column is currently used for a border).
-Most of the graphics are bruteforce, i.e. after every iteration of the game loop it will wipe the screen and redraw everything.
-As of now, there is currently no design which would point out the pun in the title. This needs to be changed.
+'''Pacman style arcade game. Play to know more!
 
-Before creating any new level please go through the entire code once. Also read the multiline comment guide given for creation of
-new levels/monsters.
+This game is an arcade game played in a 17x17 grid (though the outer row/column is currently used for a border).
+Most of the graphics are bruteforce, i.e. after every iteration of the game loop it will wipe the screen and redraw everything.
+As of now, there is currently no design which would point out the pun in the title :P This needs to be changed.
 
 Hardcoding of values has been avoided as much as possible, but for designing the levels the current values have been used.
 It is better not to change the value of any variable unless specified.'''
@@ -69,7 +68,7 @@ def button(text, x, y, width, height, inactiveColour, activeColour, action = Non
     global lvl_no
     cur = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
-    if x + width > cur[0] > x and y + height > cur[1] > y:
+    if x + width > cur[0] > x and y + height > cur[1] > y: #if cursor inside button
         if click[0] == 1 and action != None:
             if action == 'quit':
                 exitfunction()
@@ -1259,13 +1258,13 @@ def gameLoop():
         if time_count % time_factor != 0:
             freezeMonsters()
             levels[lvl_no - 1].moveMonster()
+            try: levels[lvl_no - 1].moveFruits()
+            except: pass
         gameDisplay.fill(white)
         cells.draw(time_count)
         for f in fruits:
             if f != None:
                 f.draw()
-            try: levels[lvl_no - 1].moveFruits()
-            except: pass
         for m in monsters: m.draw()
         player.draw()
         time_count += 1
