@@ -3,8 +3,7 @@ import paths
 import threading
 import time
 import player
-
-mutex = threading.Lock()
+import fruits
 
 
 class Monster(movable.Movable):
@@ -13,6 +12,7 @@ class Monster(movable.Movable):
         movable.Movable.__init__(
             self, given_board_location, given_board, screen, given_image_string)
         self.tolerated_types = (player.Player,)
+        self.picked_fruit = None
 
     def activate(self):
         self.point_feed = self.get_path()
@@ -21,14 +21,22 @@ class Monster(movable.Movable):
             while True:
                 time.sleep(self.delay)
                 try:
-                    mutex.acquire()
+                    self.board.mutex.acquire()
                     try:
+                        current_location = self.board_location
                         location = self.point_feed.next()
-                        if self.board.is_player_at(location):
+                        next_picked_fruit = None
+                        if isinstance(self.board[location], fruits.Fruit):
+                            next_picked_fruit = self.board[location]
+                        elif self.board.is_player_at(location):
                             self.board.player.kill()
                         self.move_to(location)
+                        if self.picked_fruit:
+                            self.board[current_location] = self.picked_fruit
+                            self.picked_fruit.draw()
+                        self.picked_fruit = next_picked_fruit
                     finally:
-                        mutex.release()
+                        self.board.mutex.release()
                 except StopIteration:
                     break
         move_scheduler = threading.Timer(0, mover)
@@ -51,6 +59,14 @@ class ChasingMonster(paths.ChaserAndBreaker, Monster):
         Monster.__init__(self, given_board_location, given_board,
                          surface, ".\\images\\chasing.png")
         paths.ChaserAndBreaker.__init__(self)
-        
-        self.delay = 1
 
+        self.delay = 0.1
+
+
+class RandomMonster(paths.RandomWalker, Monster):
+
+    def __init__(self, given_board_location, given_board, surface):
+        Monster.__init__(self, given_board_location,
+                         given_board, surface, ".\\images\\random.png")
+
+        self.delay = 0.1
