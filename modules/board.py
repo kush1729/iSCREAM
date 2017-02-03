@@ -3,6 +3,7 @@ import colors
 import player
 import fruits
 import blocks
+from threading import Lock
 from locations import Point
 
 
@@ -11,6 +12,9 @@ class Board(object):
     def __init__(self, width, height):
         self.grid = [[None for i in xrange(width)] for j in xrange(width)]
         self.moving = False
+        self.game_not_paused = True
+        self.game_not_ended = True
+        self.mutex = Lock()
 
     def __contains__(self, location):
         return 0 <= location.y_coordinate < len(self.grid) and 0 <= location.x_coordinate < len(self.grid[0])
@@ -40,11 +44,12 @@ class Board(object):
         self[location] = boardpiece
 
     def game_not_suspended(self):
-        return self.player.is_alive
+        return self.player.is_alive and self.game_not_ended and self.game_not_paused
 
     def move(self, from_point, to_point):
-        self[to_point] = self[from_point]
-        self[from_point] = None
+        if from_point != to_point:
+            self[to_point] = self[from_point]
+            self[from_point] = None
 
     def is_empty(self, location):
         return self.is_location_clear((), location)
