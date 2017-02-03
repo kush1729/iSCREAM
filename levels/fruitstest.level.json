@@ -9,6 +9,7 @@
         {"strawberries": []}
         ],
     "chasingMonsters": [],
+	"randomMonsters": [],
     "patrollingMonsters": [
     ],
     "mapFile": "fruitstest.level.map"
