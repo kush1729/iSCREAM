@@ -48,7 +48,7 @@ class Levelparser(object):
 
         with open('.\\levels\\' + filename) as data_file:
             self.data = json.loads(data_file.read())
-
+        
         with open('.\\levels\\' + self.data[MAP_FILE]) as map_file:
             all_maps = map_file.read().strip().split('\n\n')
             self.block_map = all_maps[0]
@@ -80,11 +80,11 @@ class Levelparser(object):
     def initiate_monsters(self):
         self.objects[PATROLLING_MONSTERS] = [
             monsters.PatrollingMonster(
-                locations.Point(*monsterdata[POINTS][0]),
+                locations.Point(*monster_data[POINTS][0]),
                 self.board,
                 self.screen,
-                [locations.Point(*point) for point in monsterdata[POINTS]]
-            ) for monsterdata in self.data[PATROLLING_MONSTERS]
+                [locations.Point(*point) for point in monster_data[POINTS]]
+            ) for monster_data in self.data[PATROLLING_MONSTERS]
         ]
 
         self.objects[CHASING_MONSTERS] = [
@@ -141,11 +141,11 @@ class Levelparser(object):
         
         self.objects[FRUIT_WAVES][self.wave_number][MOVING_FRUITS] = [
             fruits.Strawberry(
-                locations.Point(*strawberry_data[0]),
+                locations.Point(*strawberry_data[POINTS][0]),
                 self.board,
                 self.screen,
                 self.fruit_kill_callback,
-                [locations.Point(*point) for point in strawberry_data]
+                [locations.Point(*point) for point in strawberry_data[POINTS]]
             ) for strawberry_data in self.data[FRUIT_WAVES][self.wave_number][STRAWBERRIES]
         ]
 

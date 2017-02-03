@@ -5,9 +5,15 @@
     "numFruitWaves": 1,
     "player": [2, 2],
     "fruitWaves": [
-        {"strawberries": [[[1, 1], [1, 5], [5, 5], [5, 1]]]},
-        {"strawberries": []}
-        ],
+        {
+            "strawberries": [
+                {"points": [[1, 1], [1, 5], [5, 5], [5, 1]]}
+            ]
+        },
+        {
+            "strawberries": []
+        }
+    ],
     "chasingMonsters": [],
 	"randomMonsters": [],
     "patrollingMonsters": [
