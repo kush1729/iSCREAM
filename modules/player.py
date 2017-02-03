@@ -3,17 +3,17 @@ import fruits
 import blocks
 import pygame
 import locations
-
+import directions
 
 class Player(Movable):
     """Defines the player that the user controls.
     """
 
     MOVE_MAP = {
-        pygame.K_UP: (0, -1),
-        pygame.K_DOWN: (0, 1),
-        pygame.K_LEFT: (-1, 0),
-        pygame.K_RIGHT: (1, 0)
+        pygame.K_UP: directions.UP,
+        pygame.K_DOWN: directions.DOWN,
+        pygame.K_LEFT: directions.LEFT,
+        pygame.K_RIGHT: directions.RIGHT
     }
 
     def __init__(self, given_board_location, given_board, surface):
@@ -21,7 +21,7 @@ class Player(Movable):
                          given_board, surface, ".\\images\\player.png")
         self.is_alive = True
         self.tolerated_types = (fruits.Fruit,)
-        self.direction = (1, 0)
+        self.direction = directions.RIGHT
         self.score = 0
 
     def handle_event(self, event):
@@ -39,7 +39,6 @@ class Player(Movable):
     def eat(self, fruit):
         fruit.kill()
         self.score += fruit.score
-        print self.score
 
     def kill(self):
         self.is_alive = False
@@ -53,13 +52,21 @@ class Player(Movable):
                 self.shoot_ice()
 
     def remove_ice(self):
-        ice_point = locations.Point.copy(self.board_location) + self.direction
-        while ice_point in self.board and self.board.is_frozen(ice_point):
-            self.board.unfreeze(ice_point)
-            ice_point += self.direction
+        self.board.mutex.acquire()
+        try:
+            ice_point = locations.Point.copy(self.board_location) + self.direction
+            while ice_point in self.board and self.board.is_frozen(ice_point):
+                self.board.unfreeze(ice_point)
+                ice_point += self.direction
+        finally:
+            self.board.mutex.release()
 
     def shoot_ice(self):
-        ice_point = locations.Point.copy(self.board_location) + self.direction
-        while ice_point in self.board and self.board.is_location_clear(self.tolerated_types, ice_point):
-            self.board.freeze(ice_point)
-            ice_point += self.direction
+        self.board.mutex.acquire()
+        try:
+            ice_point = locations.Point.copy(self.board_location) + self.direction
+            while ice_point in self.board and self.board.is_location_clear(self.tolerated_types, ice_point):
+                self.board.freeze(ice_point)
+                ice_point += self.direction
+        finally:
+            self.board.mutex.release()
