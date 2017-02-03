@@ -5,10 +5,12 @@
     "numFruitWaves": 0,
     "player": [2, 2],
     "fruitWaves": [
-        {"strawberries": [[0, 0], [0, 5], [5, 5], [5, 0]]}
+        {"strawberries": []}
     ],
-    "chasingMonsters": [[0, 0]],
+    "randomMonsters": [[14, 14]],
+    "chasingMonsters": [],
     "patrollingMonsters": [
+	{"points": [[0, 0], [0, 5], [5, 5], [5, 0]]}
     ],
     "mapFile": "playertest.level.map"
 }
