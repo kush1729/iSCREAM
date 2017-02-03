@@ -13,5 +13,7 @@
         {"points":[[5, 5], [9, 5], [9, 9], [5, 9]]},
         {"points":[[9, 9], [5, 9], [5, 5], [9, 5]]}
     ],
+	"chasingMonsters": [],
+	"randomMonsters": [],
     "mapFile": "test.level.map"
 }
