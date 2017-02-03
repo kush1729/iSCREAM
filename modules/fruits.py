@@ -1,6 +1,6 @@
 import boardpiece
 import pygame
-import fixedpath
+import paths
 import colors
 import threading
 import time
@@ -56,14 +56,13 @@ class Fruit(boardpiece.BoardPiece):
         self.board.draw_board_rect(self.board_location)
         self.kill_callback()
 
-mutex = threading.Lock()
 
-class Strawberry(Fruit, fixedpath.FixedPathFollower):
+class Strawberry(Fruit, paths.FixedPathFollower):
 
     def __init__(self, given_board_location, given_board, surface, fruit_kill_callback, given_path):
         Fruit.__init__(self, given_board_location, given_board, surface,
                        200, ".\\images\\strawberry.png", False, fruit_kill_callback)
-        fixedpath.FixedPathFollower.__init__(self, given_path)
+        paths.FixedPathFollower.__init__(self, given_path)
         
         self.tolerated_types = (player.Player,)
 
@@ -75,18 +74,19 @@ class Strawberry(Fruit, fixedpath.FixedPathFollower):
         def mover():
             while self.alive:
                 time.sleep(self.delay)
+                self.board.mutex.acquire()
                 try:
-                    mutex.acquire()
-                    try:
-                        location = self.point_feed.next()
-                        if self.board.is_of_type(location, player.Player):
-                            self.board.player.eat(self)
+                    if not self.frozen:
+                        try:
+                                location = self.point_feed.next()
+                                if self.board.is_of_type(location, player.Player):
+                                    self.board.player.eat(self)
+                                    break
+                                self.move_to(location)
+                        except StopIteration:
                             break
-                        self.move_to(location)
-                    finally:
-                        mutex.release()
-                except StopIteration:
-                    break
+                finally:
+                    self.board.mutex.release()
         move_scheduler = threading.Timer(0, mover)
         move_scheduler.start()
 
