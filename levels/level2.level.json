@@ -1,0 +1,20 @@
+{
+	"boardHeight": 15,
+    "boardWidth": 15,
+    "levelName": "Level 2",
+    "numFruitWaves": 0,
+    "player": [0, 0],
+    "fruitWaves": [
+        {"strawberries": []}
+    ],
+    "randomMonsters": [],
+    "chasingMonsters": [],
+    "patrollingMonsters": [
+	{"points": [[14, 14], [0, 14], [0, 0], [14, 0]]},
+	{"points": [[12, 2], [12, 12], [2, 12], [2, 2]]},
+	{"points": [[2, 12], [2, 2], [12, 2], [12, 12]]},
+	{"points": [[4, 4], [10, 4], [10, 10], [4, 10]]},
+	{"points": [[10, 10], [4, 10], [4, 4], [10, 4]]}
+    ],
+    "mapFile": "level2.level.map"
+}
