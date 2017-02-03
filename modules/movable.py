@@ -11,10 +11,12 @@ class Movable(boardpiece.BoardPiece):
         boardpiece.BoardPiece.__init__(
             self, given_board_location, given_board, surface)
 
-        self.image = pygame.image.load(given_image_string).convert()
+        self.image = pygame.Surface(
+            [self.board.square_side, self.board.square_side], pygame.SRCALPHA)
+        self.image.blit(pygame.image.load(given_image_string).convert_alpha(), (1, 1))
         self.rect = self.image.get_rect()
-        self.update()
 
+        self.update()
         self.draw()
 
     def move_to(self, new_location):

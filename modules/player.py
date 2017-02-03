@@ -25,16 +25,20 @@ class Player(Movable):
         self.score = 0
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            try:
-                new_location = self.board_location + self.MOVE_MAP[event.key]
-                if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and not self.board.is_frozen(new_location):
-                    self.eat(self.board[new_location])
-                self.move_to(new_location)
-                self.direction = self.MOVE_MAP[event.key]
-            except KeyError:
-                if event.key == pygame.K_SPACE:
-                    self.shoot()
+        self.board.mutex.acquire()
+        try:
+            if event.type == pygame.KEYDOWN:
+                try:
+                    new_location = self.board_location + self.MOVE_MAP[event.key]
+                    if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and not self.board.is_frozen(new_location):
+                        self.eat(self.board[new_location])
+                    self.move_to(new_location)
+                    self.direction = self.MOVE_MAP[event.key]
+                except KeyError:
+                    if event.key == pygame.K_SPACE:
+                        self.shoot()
+        finally:
+            self.board.mutex.release()
     
     def eat(self, fruit):
         fruit.kill()

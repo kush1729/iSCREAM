@@ -76,13 +76,14 @@ class Strawberry(Fruit, paths.FixedPathFollower):
                 time.sleep(self.delay)
                 self.board.mutex.acquire()
                 try:
-                    if not self.frozen:
+                    if not self.frozen and self.alive:
                         try:
-                                location = self.point_feed.next()
-                                if self.board.is_of_type(location, player.Player):
-                                    self.board.player.eat(self)
-                                    break
-                                self.move_to(location)
+                            location = self.point_feed.next()
+                            if self.board.is_of_type(location, player.Player):
+                                self.board.free_location(self.board_location)
+                                self.board.player.eat(self)
+                                break
+                            self.move_to(location)
                         except StopIteration:
                             break
                 finally:
