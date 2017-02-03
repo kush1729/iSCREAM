@@ -19,6 +19,7 @@ MOVING_FRUITS = 'movingFruits'
 STRAWBERRIES = 'strawberries'
 PATROLLING_MONSTERS = 'patrollingMonsters'
 CHASING_MONSTERS = 'chasingMonsters'
+RANDOM_MONSTERS = 'randomMonsters'
 ICE_BLOCKS = 'iceBlocks'
 WALL_BLOCKS = 'wallBlocks'
 POINTS = 'points'
@@ -60,6 +61,7 @@ class Levelparser(object):
             FRUIT_WAVES: [],
             PATROLLING_MONSTERS: [],
             CHASING_MONSTERS: [],
+            RANDOM_MONSTERS: []
         }
 
         self.board = board.GraphicalBoard(
@@ -77,12 +79,13 @@ class Levelparser(object):
     
     def initiate_monsters(self):
         self.objects[PATROLLING_MONSTERS] = [
-        monsters.PatrollingMonster(
-            locations.Point(*monsterdata[POINTS][0]),
-            self.board,
-            self.screen,
-            [locations.Point(*point) for point in monsterdata[POINTS]]
-        ) for monsterdata in self.data[PATROLLING_MONSTERS]]
+            monsters.PatrollingMonster(
+                locations.Point(*monsterdata[POINTS][0]),
+                self.board,
+                self.screen,
+                [locations.Point(*point) for point in monsterdata[POINTS]]
+            ) for monsterdata in self.data[PATROLLING_MONSTERS]
+        ]
 
         self.objects[CHASING_MONSTERS] = [
             monsters.ChasingMonster(
@@ -90,6 +93,14 @@ class Levelparser(object):
                 self.board,
                 self.screen
             ) for location in self.data[CHASING_MONSTERS]
+        ]
+
+        self.objects[RANDOM_MONSTERS] = [
+            monsters.RandomMonster(
+                locations.Point(*location),
+                self.board,
+                self.screen
+            ) for location in self.data[RANDOM_MONSTERS]
         ]
 
     def parse_map(self, map, callback):

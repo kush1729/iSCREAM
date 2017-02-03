@@ -1,7 +1,10 @@
 import movable
 from feeders import PointFeeder
+from locations import Point
 import locations
 import blocks
+import random
+import directions
 
 class FixedPathFollower(movable.Movable):
 
@@ -17,8 +20,12 @@ class FixedPathFollower(movable.Movable):
                 yield new_position
             else:
                 direction *= -1
-                feeder.next(direction)
-                yield feeder.next(direction) if self.board.is_location_clear(self.tolerated_types, new_position) else self.board_location
+                new_position = feeder.next(direction)
+                if self.board.is_location_clear(self.tolerated_types, new_position):
+                    yield new_position
+                else:
+                    feeder.next(direction * -1)
+                    yield self.board_location
 
 
 class ChaserAndBreaker(movable.Movable):
@@ -39,10 +46,12 @@ class ChaserAndBreaker(movable.Movable):
                 y_distance = player_location.y_coordinate - self.board_location.y_coordinate
 
                 new_y_location = self.board_location + (0, cmp(y_distance, 0))
-                new_y_location_useful = self.board.is_location_clear(self.tolerated_types, new_y_location) and new_y_location != self.board_location
+                new_y_location_useful = self.board.is_location_clear(self.tolerated_types, new_y_location) \
+                    and new_y_location != self.board_location
 
                 new_x_location = self.board_location + (cmp(x_distance, 0), 0)
-                new_x_location_useful = self.board.is_location_clear(self.tolerated_types, new_x_location) and new_x_location != self.board_location
+                new_x_location_useful = self.board.is_location_clear(self.tolerated_types, new_x_location) \
+                    and new_x_location != self.board_location
 
                 if new_y_location_useful and new_x_location_useful:
                     yield new_y_location if abs(y_distance) > abs(x_distance) else new_x_location
@@ -58,3 +67,15 @@ class ChaserAndBreaker(movable.Movable):
                     yield self.board_location
             else:
                 yield self.board_location
+
+class RandomWalker(movable.Movable):
+
+    def get_path(self):
+        while self.board.game_not_suspended():
+            possible_points = [
+                self.board_location + direction \
+                for direction in directions.ALL_DIRECTIONS \
+                if self.board.is_location_clear(self.tolerated_types, self.board_location + direction)
+            ]
+
+            yield random.choice(possible_points)
