@@ -19,25 +19,27 @@ class Game(object):
                     self.next_wave()
             except IndexError:
                 self.not_suspended = False
+                self.board.game_not_ended = False
 
         self.dataparser = levelparser.Levelparser(file_name, (0, 0), self.screen, fruit_kill_function)
         self.not_suspended = True
         self.num_fruits = 0
 
     def start(self):
-        board = self.dataparser.board
+        self.board = self.dataparser.board
         user = self.dataparser.player
 
         self.dataparser.initiate_monsters()
         self.dataparser.initiate_blocks()
         self.next_wave()
-        board.start(user)
+        self.board.start(user)
 
         clock = pygame.time.Clock()
 
         for movable in itertools.chain(self.dataparser.objects[levelparser.PATROLLING_MONSTERS],
             self.dataparser.objects[levelparser.CHASING_MONSTERS],
-            self.dataparser.objects[levelparser.FRUIT_WAVES][self.dataparser.wave_number][levelparser.MOVING_FRUITS]):
+            self.dataparser.objects[levelparser.FRUIT_WAVES][self.dataparser.wave_number][levelparser.MOVING_FRUITS],
+            self.dataparser.objects[levelparser.RANDOM_MONSTERS]):
             movable.activate()
 
         pygame.display.flip()
