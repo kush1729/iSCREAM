@@ -56,21 +56,13 @@ class Player(Movable):
                 self.shoot_ice()
 
     def remove_ice(self):
-        self.board.mutex.acquire()
-        try:
-            ice_point = locations.Point.copy(self.board_location) + self.direction
-            while ice_point in self.board and self.board.is_frozen(ice_point):
-                self.board.unfreeze(ice_point)
-                ice_point += self.direction
-        finally:
-            self.board.mutex.release()
+        ice_point = locations.Point.copy(self.board_location) + self.direction
+        while ice_point in self.board and self.board.is_frozen(ice_point):
+            self.board.unfreeze(ice_point)
+            ice_point += self.direction
 
     def shoot_ice(self):
-        self.board.mutex.acquire()
-        try:
-            ice_point = locations.Point.copy(self.board_location) + self.direction
-            while ice_point in self.board and self.board.is_location_clear(self.tolerated_types, ice_point):
-                self.board.freeze(ice_point)
-                ice_point += self.direction
-        finally:
-            self.board.mutex.release()
+        ice_point = locations.Point.copy(self.board_location) + self.direction
+        while ice_point in self.board and self.board.is_location_clear(self.tolerated_types, ice_point):
+            self.board.freeze(ice_point)
+            ice_point += self.direction
