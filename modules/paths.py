@@ -20,6 +20,7 @@ class FixedPathFollower(movable.Movable):
                 yield new_position
             else:
                 direction *= -1
+                feeder.next(direction)
                 new_position = feeder.next(direction)
                 if self.board.is_location_clear(self.tolerated_types, new_position):
                     yield new_position
