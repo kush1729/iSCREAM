@@ -41,7 +41,7 @@ character_map = {
 
 class Levelparser(object):
 
-    def __init__(self, filename, board_position, surface, fruit_kill_callback):
+    def __init__(self, filename, board_position, surface, fruit_kill_callback, player_dead_callback):
         self.screen = surface
         self.wave_number = -1
         self.fruit_kill_callback = fruit_kill_callback
@@ -74,7 +74,8 @@ class Levelparser(object):
         self.player = player.Player(
             locations.Point(*self.data[PLAYER]),
             self.board,
-            self.screen
+            self.screen,
+            player_dead_callback
         )
     
     def initiate_monsters(self):
