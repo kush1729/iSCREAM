@@ -27,7 +27,7 @@ class Player(Movable):
     def handle_event(self, event):
         self.board.mutex.acquire()
         try:
-            if event.type == pygame.KEYDOWN:
+            if self.board.game_not_paused and event.type == pygame.KEYDOWN:
                 try:
                     new_location = self.board_location + self.MOVE_MAP[event.key]
                     if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and not self.board.is_frozen(new_location):
