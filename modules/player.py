@@ -4,6 +4,7 @@ import blocks
 import pygame
 import locations
 import directions
+import events
 
 class Player(Movable):
     """Defines the player that the user controls.
@@ -16,36 +17,48 @@ class Player(Movable):
         pygame.K_RIGHT: directions.RIGHT
     }
 
-    def __init__(self, given_board_location, given_board, surface):
+    def __init__(self, given_board_location, given_board, surface, kill_callback):
         Movable.__init__(self, given_board_location,
                          given_board, surface, ".\\images\\player.png")
         self.is_alive = True
         self.tolerated_types = (fruits.Fruit,)
+        self.kill_callback = kill_callback
         self.direction = directions.RIGHT
         self.score = 0
 
-    def handle_event(self, event):
-        self.board.mutex.acquire()
-        try:
-            if self.board.game_not_paused and event.type == pygame.KEYDOWN:
+        def make_handler(direction):
+            def handle_key():
+                self.board.mutex.acquire()
                 try:
-                    new_location = self.board_location + self.MOVE_MAP[event.key]
-                    if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and not self.board.is_frozen(new_location):
-                        self.eat(self.board[new_location])
-                    self.move_to(new_location)
-                    self.direction = self.MOVE_MAP[event.key]
-                except KeyError:
-                    if event.key == pygame.K_SPACE:
-                        self.shoot()
-        finally:
-            self.board.mutex.release()
+                    if self.board.game_not_suspended():
+                        new_location = self.board_location + direction
+                        if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and not self.board.is_frozen(new_location):
+                            self.eat(self.board[new_location])
+                        self.move_to(new_location)
+                        self.direction = direction
+                finally:
+                    self.board.mutex.release()
+            return handle_key
+        
+        def shoot_handler():
+            self.board.mutex.acquire()
+            try:
+                self.shoot()
+            finally:
+                self.board.mutex.release()
+        
+        events.add_keypress_listener(pygame.K_SPACE, shoot_handler)
+
+        for key, direction in self.MOVE_MAP.items():
+            events.add_keypress_listener(key, make_handler(direction))
     
     def eat(self, fruit):
-        fruit.kill()
         self.score += fruit.score
+        fruit.kill()
 
     def kill(self):
         self.is_alive = False
+        self.kill_callback()
 
     def shoot(self):
         ice_point = locations.Point.copy(self.board_location) + self.direction
