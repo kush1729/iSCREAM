@@ -41,8 +41,7 @@ wall_loc = list(set(wall_loc))
 display_height =  595    #17 divides 595, to make block size 35x35 pixels. Preferably do not change.
 display_width = display_height 
 pygame.display.set_caption('iSCREAM')
-try: pygame.display.set_icon(pygame.image.load('icon.jpg'))
-except: pygame.display.set_icon(pygame.image.load('player.png'))
+pygame.display.set_icon(pygame.image.load('icon.png'))
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 gameDisplay.fill(snow)
 clock = pygame.time.Clock()     #regulate game loop
