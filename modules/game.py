@@ -20,7 +20,7 @@ class Game(object):
 				if self.num_fruits == 0:
 					self.next_wave()
 			except IndexError:
-				end_callback(True)
+				end_callback(True, self.user.score, 0)
 				self.not_suspended = False
 				self.board.game_not_ended = False
 		
@@ -29,7 +29,7 @@ class Game(object):
 		
 		def player_dead():
 			self.board.game_not_ended = False
-			end_callback(False, self.user.score)
+			end_callback(False, self.user.score, 0)
 
 		events.add_exit_listener(game_kill)
 		self.dataparser = levelparser.Levelparser(file_name, board_position, self.screen, fruit_kill_function, player_dead)
