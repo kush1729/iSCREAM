@@ -1,0 +1,30 @@
+{
+    "boardHeight": 15,
+    "boardWidth": 15,
+    "levelName": "Level 5",
+    "numFruitWaves": 2,
+    "player": [7, 7],
+    "fruitWaves": [
+        {"banana": []},
+		{"apple": []}
+    ],
+	"monsterWaves": [
+	{"randomMonsters": [],
+	"chasingMonsters": [],
+    "patrollingMonsters": [
+        {"points":[[6, 6], [6, 8], [8, 8], [8, 6] ]},
+		{"points":[[0, 0], [0, 14], [14, 14], [14, 0]]},
+        {"points":[[14, 14], [14, 0], [0, 0], [0, 14]]},
+		{"points":[[2, 2], [2, 12], [12, 12], [12, 2]]},
+		{"points":[[12, 12], [12, 2], [2, 2], [2, 12]]},
+		{"points":[[4, 4], [4, 10], [10, 10], [10, 4]]},
+		{"points":[[10, 10], [10, 4], [4, 4], [4, 10]]}
+    ]}, 
+	{"randomMonsters": [],
+	"chasingMonsters": [[0, 7], [7, 0], [7, 14], [14, 7]],
+    "patrollingMonsters": [
+		{"points":[[6, 6], [6, 8], [8, 8], [8, 6]]}]
+	}
+	]
+    "mapFile": "level5.level.map"
+}

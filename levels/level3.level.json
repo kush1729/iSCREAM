@@ -1,0 +1,15 @@
+{
+	"boardHeight": 15,
+    "boardWidth": 15,
+    "levelName": "Level 3",
+    "numFruitWaves": 2,
+    "player": [2, 2],
+    "fruitWaves": [
+        {"apple": []},
+		{"banana": []}
+    ],
+    "randomMonsters": [],
+    "chasingMonsters": [[7, 7]],
+    "patrollingMonsters": [],
+    "mapFile": "level3.level.map"
+}
