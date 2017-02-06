@@ -16,10 +16,7 @@ def add_keypress_listener(key, callback):
     event_dict[pygame.KEYDOWN][key].add(callback)
 
 def remove_keypress_listener(key, callback):
-    try:
-        event_dict[pygame.KEYDOWN][key].remove(callback)
-    except KeyError:
-        pass
+    event_dict[pygame.KEYDOWN][key].remove(callback)
 
 def add_click_listener(clickable, callback):
     event_dict[pygame.MOUSEBUTTONUP][clickable] = callback
@@ -42,7 +39,7 @@ def handle_event(event):
         for action in event_dict[pygame.KEYDOWN][event.key]:
             action()
     elif event.type == pygame.MOUSEBUTTONUP:
-        for clickable in event_dict[pygame.MOUSEBUTTONUP]:
+        for clickable in event_dict[pygame.MOUSEBUTTONUP].copy():
             if clickable.rect.topleft[0] <= event.pos[0] <= clickable.rect.topright[0] \
                 and clickable.rect.topleft[1] <= event.pos[1] <= clickable.rect.bottomright[1]:
                 event_dict[pygame.MOUSEBUTTONUP][clickable]()
@@ -57,6 +54,11 @@ def start():
         c.tick(30)
         for e in pygame.event.get():
             handle_event(e)
+
+def stop():
+    global loop
+    loop = False
+    
 
 if __name__ == '__main__':
     pygame.init()
