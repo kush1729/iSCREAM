@@ -5,6 +5,7 @@ import pygame
 import locations
 import directions
 import events
+import threading
 
 class Player(Movable):
     """Defines the player that the user controls.
@@ -43,14 +44,18 @@ class Player(Movable):
         def shoot_handler():
             self.board.mutex.acquire()
             try:
-                self.shoot()
+                if self.board.game_not_suspended():
+                    self.shoot()
             finally:
                 self.board.mutex.release()
         
         events.add_keypress_listener(pygame.K_SPACE, shoot_handler)
 
+        self.event_handlers = {}
+
         for key, direction in self.MOVE_MAP.items():
-            events.add_keypress_listener(key, make_handler(direction))
+            self.event_handlers[key] = make_handler(direction)
+            events.add_keypress_listener(key, self.event_handlers[key])
     
     def eat(self, fruit):
         self.score += fruit.score
@@ -58,6 +63,8 @@ class Player(Movable):
 
     def kill(self):
         self.is_alive = False
+        for key, event_handler in self.event_handlers.items():
+            events.remove_keypress_listener(key, event_handler)
         self.kill_callback()
 
     def shoot(self):
