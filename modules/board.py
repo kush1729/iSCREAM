@@ -31,8 +31,8 @@ class Board(object):
     def is_location_clear(self, tolerated, location):
         try:
             if location in self:
-                return self[location] is None or any(isinstance(self[location], board_piece_type)
-                                                     for board_piece_type in tolerated)\
+                return self[location] is None or any(
+                    isinstance(self[location], board_piece_type) for board_piece_type in tolerated)\
                     if not isinstance(self[location], fruits.Fruit)\
                     else not self[location].frozen
             else:
@@ -44,7 +44,7 @@ class Board(object):
         self[location] = boardpiece
 
     def game_not_suspended(self):
-        return self.player.is_alive and self.game_not_ended and self.game_not_paused
+        return self.game_not_ended and self.game_not_paused
 
     def move(self, from_point, to_point):
         if from_point != to_point:
@@ -52,7 +52,7 @@ class Board(object):
             self[from_point] = None
 
     def is_empty(self, location):
-        return self.is_location_clear((), location)
+        return self[location] is None
 
     def is_of_type(self, location, type):
         return isinstance(self[location], type)
