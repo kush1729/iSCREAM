@@ -136,6 +136,7 @@ class LevelPage(Page):
 class GamePage(Page):
 	def __init__(self, screen):
 		Page.__init__(self, screen)
+
 		self.image = pygame.Surface((self.screen.get_rect().width, self.screen.get_rect().height), pygame.SRCALPHA)
 
 		for i in xrange(17):
@@ -149,23 +150,40 @@ class GamePage(Page):
 			update_rect_2 = pygame.Rect(560, 35 * i, 35, 35)
 			self.draw_border_rect(update_rect_1)
 			self.draw_border_rect(update_rect_2)
+
+		self.score_rect = pygame.Rect(0, 595, 595/2, 70)
+		self.time_rect = pygame.Rect(595/2, 595, 595/2, 70)
+		
+		pygame.draw.rect(self.image, colors.LIGHT_GREEN, self.score_rect)
+		pygame.draw.rect(self.image, colors.LIGHT_GREEN, self.time_rect)
 	
 	def draw_border_rect(self, update_rect):
 		pygame.draw.rect(self.image, colors.MED_BLUE, update_rect)
 		pygame.draw.rect(self.image, colors.BLACK, update_rect, 1)
 
+
 	def display(self, level_file):
 		self.level_file = level_file
 
-		def score_cb(score):
-			text = fonts.SMALL.render(str(score), True, colors.BLACK)
-			textRect = text.get_rect()
-			textRect.bottomleft = (0, 665)
+		def score_callback(score):
+			score = fonts.SMALL.render('SCORE: %d' % score, True, colors.BLACK)
+			score_rect = score.get_rect()
+			score_rect.midleft = (15, 630)
 			
-			self.screen.fill(colors.WHITE, pygame.Rect(0, 595 + 40, 150, 40))
-			self.screen.blit(text, textRect)
+			self.screen.fill(colors.LIGHT_GREEN, self.score_rect)
+			self.screen.blit(score, score_rect)
 			
-			pygame.display.update(pygame.Rect(0, 595 + 40, 150, 40))
+			pygame.display.update(self.score_rect)
+			
+		def tick_callback(time):
+			time_text = fonts.SMALL.render('TIME: %d:%02d' % (int(time) // 60, int(time) % 60), True, colors.BLACK)
+			time_text_rect = time_text.get_rect()
+			time_text_rect.midright = (580, 630)
+			
+			self.screen.fill(colors.LIGHT_GREEN, self.time_rect)
+			self.screen.blit(time_text, time_text_rect)
+			
+			pygame.display.update(self.time_rect)
 		
 		def end_callback(user_won, score, time):
 			def clear_screen():
@@ -178,8 +196,11 @@ class GamePage(Page):
 		Page.display(self)
 		self.screen.blit(self.image, (0, 0))
 		pygame.display.flip()
+		
+		score_callback(0)
+		tick_callback(0)
 
-		current_game = game.Game(self.screen, (35, 35), level_file, score_cb, end_callback)
+		current_game = game.Game(self.screen, (35, 35), level_file, score_callback, tick_callback, end_callback)
 		current_game.start()
 
 class ResultsPage(Page):
