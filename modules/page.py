@@ -232,6 +232,34 @@ class ResultsPage(Page):
 	
 	def display(self, user_won, score, time, level_file):
 		self.last_level_file = level_file
+		self.texts = []
+		
+		win_message = fonts.LARGE.render('YOU WON' if user_won else 'YOU LOST', True, colors.ORANGE)
+		win_message_rect = win_message.get_rect()
+		win_message_rect.center = (self.screen_horizontal_center, 100)
+
+		self.texts.append((win_message, win_message_rect))
+
+		time_taken = fonts.MEDIUM.render(
+			'TIME TAKEN: %d:%02d' % (int(time) // 60, int(time) % 60),
+			True,
+			colors.CHOCOLATE
+		)
+		time_taken_rect = time_taken.get_rect()
+		time_taken_rect.center = (self.screen_horizontal_center, 225)
+
+		self.texts.append((time_taken, time_taken_rect))
+
+		score = fonts.MEDIUM.render(
+			'YOUR SCORE: %d' % (score),
+			True,
+			colors.CHOCOLATE
+		)
+		score_rect = score.get_rect()
+		score_rect.center = (self.screen_horizontal_center, 335)
+
+		self.texts.append((score, score_rect))
+
 		Page.display(self)
 
 
