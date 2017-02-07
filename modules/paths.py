@@ -19,6 +19,7 @@ class FixedPathFollower(movable.Movable):
             if self.board.is_location_clear(self.tolerated_types, new_position):
                 yield new_position
             else:
+                import monsters
                 direction *= -1
                 feeder.next(direction)
                 new_position = feeder.next(direction)
@@ -79,4 +80,7 @@ class RandomWalker(movable.Movable):
                 if self.board.is_location_clear(self.tolerated_types, self.board_location + direction)
             ]
 
-            yield random.choice(possible_points)
+            if possible_points:
+                yield random.choice(possible_points)
+            else:
+                yield self.board_location
