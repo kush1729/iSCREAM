@@ -43,7 +43,7 @@ class Block(boardpiece.BoardPiece):
             color_index = 0
             flash_colors = [colors.RED, self.color]
 
-            for i in xrange(20):
+            for i in xrange(50):
                 if not self.dead:
                     time.sleep(0.1)
                     self.color = flash_colors[color_index]
