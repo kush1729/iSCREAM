@@ -19,8 +19,10 @@ class Player(Movable):
     }
 
     def __init__(self, given_board_location, given_board, surface, kill_callback):
+        def void(location):
+            pass
         Movable.__init__(self, given_board_location,
-                         given_board, surface, ".\\images\\player.png")
+                         given_board, surface, void, ".\\images\\player.png")
         self.is_alive = True
         self.tolerated_types = (fruits.Fruit,)
         self.kill_callback = kill_callback

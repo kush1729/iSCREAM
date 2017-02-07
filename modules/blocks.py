@@ -7,9 +7,11 @@ import threading
 class Block(boardpiece.BoardPiece):
 
     def __init__(self, given_board_location, given_board, surface, color):
+        def void(location):
+            pass
 
         boardpiece.BoardPiece.__init__(
-            self, given_board_location, given_board, surface)
+            self, given_board_location, given_board, surface, void)
         self.rect = pygame.Rect(
             0, 0, self.board.square_side, self.board.square_side)
         self.rect.topleft = self.position
@@ -44,7 +46,7 @@ class Block(boardpiece.BoardPiece):
             flash_colors = [colors.RED, self.color]
 
             for i in xrange(50):
-                if not self.dead:
+                if not self.dead and self.board.game_not_suspended():
                     time.sleep(0.1)
                     self.color = flash_colors[color_index]
                     color_index = (color_index + 1) % 2
