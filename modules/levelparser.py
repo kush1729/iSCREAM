@@ -14,6 +14,7 @@ BOARD = 'board'
 BOARD_HEIGHT = 'boardHeight'
 BOARD_WIDTH = 'boardWidth'
 FRUIT_WAVES = 'fruitWaves'
+MONSTER_WAVES = 'monsterWaves'
 STATIC_FRUITS = 'staticFruits'
 MOVING_FRUITS = 'movingFruits'
 STRAWBERRIES = 'strawberries'
@@ -26,130 +27,132 @@ POINTS = 'points'
 PLAYER = 'player'
 
 board_piece_type = {
-    'i': blocks.IceBlock,
-    'w': blocks.WallBlock,
-    'a': fruits.Apple,
-    'b': fruits.Banana,
-    'g': fruits.Grapes
+	'i': blocks.IceBlock,
+	'w': blocks.WallBlock,
+	'a': fruits.Apple,
+	'b': fruits.Banana,
+	'g': fruits.Grapes
 }
 
 character_map = {
-    "i": ICE_BLOCKS,
-    "w": WALL_BLOCKS
+	"i": ICE_BLOCKS,
+	"w": WALL_BLOCKS
 }
 
 
 class Levelparser(object):
 
-    def __init__(self, filename, board_position, surface, fruit_kill_callback, player_dead_callback):
-        self.screen = surface
-        self.wave_number = -1
-        self.fruit_kill_callback = fruit_kill_callback
+	def __init__(self, filename, board_position, surface, fruit_kill_callback, player_dead_callback):
+		self.screen = surface
+		self.wave_number = -1
+		self.fruit_kill_callback = fruit_kill_callback
 
-        with open('.\\levels\\' + filename) as data_file:
-            self.data = json.loads(data_file.read())
-        
-        with open('.\\levels\\' + self.data[MAP_FILE]) as map_file:
-            all_maps = map_file.read().strip().split('\n\n')
-            self.block_map = all_maps[0]
+		with open('.\\levels\\' + filename) as data_file:
+			self.data = json.loads(data_file.read())
+		
+		with open('.\\levels\\' + self.data[MAP_FILE]) as map_file:
+			all_maps = map_file.read().strip().split('\n\n')
+			self.block_map = all_maps[0]
 
-            self.wave_maps = all_maps[1:]
+			self.wave_maps = all_maps[1:]
 
-        self.objects = {
-            ICE_BLOCKS: [],
-            WALL_BLOCKS: [],
-            FRUIT_WAVES: [],
-            PATROLLING_MONSTERS: [],
-            CHASING_MONSTERS: [],
-            RANDOM_MONSTERS: []
-        }
+		self.objects = {
+			ICE_BLOCKS: [],
+			WALL_BLOCKS: [],
+			FRUIT_WAVES: [],
+			MONSTER_WAVES:[]
+		}
 
-        self.board = board.GraphicalBoard(
-            self.data[BOARD_WIDTH],
-            self.data[BOARD_HEIGHT],
-            board_position,
-            self.screen
-        )
+		self.board = board.GraphicalBoard(
+			self.data[BOARD_WIDTH],
+			self.data[BOARD_HEIGHT],
+			board_position,
+			self.screen
+		)
 
-        self.player = player.Player(
-            locations.Point(*self.data[PLAYER]),
-            self.board,
-            self.screen,
-            player_dead_callback
-        )
-    
-    def initiate_monsters(self):
-        self.objects[PATROLLING_MONSTERS] = [
-            monsters.PatrollingMonster(
-                locations.Point(*monster_data[POINTS][0]),
-                self.board,
-                self.screen,
-                [locations.Point(*point) for point in monster_data[POINTS]]
-            ) for monster_data in self.data[PATROLLING_MONSTERS]
-        ]
+		self.player = player.Player(
+			locations.Point(*self.data[PLAYER]),
+			self.board,
+			self.screen,
+			player_dead_callback
+		)
 
-        self.objects[CHASING_MONSTERS] = [
-            monsters.ChasingMonster(
-                locations.Point(*location),
-                self.board,
-                self.screen
-            ) for location in self.data[CHASING_MONSTERS]
-        ]
+	def parse_map(self, map, callback):
+		for y, line in enumerate(map.split()):
+			for x, character in enumerate(line):
+				if character.lower() in board_piece_type:
+					callback(x, y, character)
 
-        self.objects[RANDOM_MONSTERS] = [
-            monsters.RandomMonster(
-                locations.Point(*location),
-                self.board,
-                self.screen
-            ) for location in self.data[RANDOM_MONSTERS]
-        ]
+	def set_ice_blocks(self, x, y, character):
+		self.objects[character_map[character]].append(
+			board_piece_type[character](
+				locations.Point(x, y),
+				self.board,
+				self.screen
+			)
+		)
 
-    def parse_map(self, map, callback):
-        for y, line in enumerate(map.split()):
-            for x, character in enumerate(line):
-                if character.lower() in board_piece_type:
-                    callback(x, y, character)
+	def initiate_blocks(self):
+		self.parse_map(self.block_map, self.set_ice_blocks)
 
-    def set_ice_blocks(self, x, y, character):
-        self.objects[character_map[character]].append(
-            board_piece_type[character](
-                locations.Point(x, y),
-                self.board,
-                self.screen
-            )
-        )
+	def set_static_fruits(self, x, y, character):
+		self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS].append(
+			board_piece_type[character.lower()](
+				locations.Point(x, y),
+				self.board,
+				self.screen,
+				character.isupper(),
+				self.fruit_kill_callback
+			)
+		)
+		
+	def next_wave(self):
+		self.wave_number += 1
+		self.next_fruit_wave()
+		self.next_monster_wave()
+	
+	def next_fruit_wave(self):
+		self.objects[FRUIT_WAVES].append(
+			{STATIC_FRUITS: [], MOVING_FRUITS: []})
+		self.parse_map(
+			self.wave_maps[self.wave_number], self.set_static_fruits)
+		
+		self.objects[FRUIT_WAVES][self.wave_number][MOVING_FRUITS] = [
+			fruits.Strawberry(
+				locations.Point(*strawberry_data[POINTS][0]),
+				self.board,
+				self.screen,
+				self.fruit_kill_callback,
+				[locations.Point(*point) for point in strawberry_data[POINTS]]
+			) for strawberry_data in self.data[FRUIT_WAVES][self.wave_number][STRAWBERRIES]
+		]
+	
+	def next_monster_wave(self):
+		self.objects[MONSTER_WAVES].append({
+			PATROLLING_MONSTERS: [
+				monsters.PatrollingMonster(
+					locations.Point(*monster_data[POINTS][0]),
+					self.board,
+					self.screen,
+					[locations.Point(*point) for point in monster_data[POINTS]]
+				) for monster_data in self.data[MONSTER_WAVES][self.wave_number][PATROLLING_MONSTERS]
+			],
+			CHASING_MONSTERS: [
+				monsters.ChasingMonster(
+					locations.Point(*location),
+					self.board,
+					self.screen
+				) for location in self.data[MONSTER_WAVES][self.wave_number][CHASING_MONSTERS]
+			],
+			RANDOM_MONSTERS: [
+				monsters.RandomMonster(
+					locations.Point(*location),
+					self.board,
+					self.screen
+				) for location in self.data[MONSTER_WAVES][self.wave_number][RANDOM_MONSTERS]
+			]
+		})
 
-    def initiate_blocks(self):
-        self.parse_map(self.block_map, self.set_ice_blocks)
-
-    def set_static_fruits(self, x, y, character):
-        self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS].append(
-            board_piece_type[character.lower()](
-                locations.Point(x, y),
-                self.board,
-                self.screen,
-                character.isupper(),
-                self.fruit_kill_callback
-            )
-        )
-
-    def next_fruit_wave(self):
-        self.wave_number += 1
-        self.objects[FRUIT_WAVES].append(
-            {STATIC_FRUITS: [], MOVING_FRUITS: []})
-        self.parse_map(
-            self.wave_maps[self.wave_number], self.set_static_fruits)
-        
-        self.objects[FRUIT_WAVES][self.wave_number][MOVING_FRUITS] = [
-            fruits.Strawberry(
-                locations.Point(*strawberry_data[POINTS][0]),
-                self.board,
-                self.screen,
-                self.fruit_kill_callback,
-                [locations.Point(*point) for point in strawberry_data[POINTS]]
-            ) for strawberry_data in self.data[FRUIT_WAVES][self.wave_number][STRAWBERRIES]
-        ]
-
-    def get_current_wave_size(self):
-        return len(self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS]) \
-            + len(self.objects[FRUIT_WAVES][self.wave_number][MOVING_FRUITS])
+	def get_current_wave_size(self):
+		return len(self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS]) \
+			+ len(self.objects[FRUIT_WAVES][self.wave_number][MOVING_FRUITS])

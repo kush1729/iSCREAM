@@ -4,6 +4,7 @@ import locations
 import levelparser
 import itertools
 import events
+import time
 
 import colors
 
@@ -20,7 +21,7 @@ class Game(object):
 				if self.num_fruits == 0:
 					self.next_wave()
 			except IndexError:
-				end_callback(True, self.user.score, 0)
+				end_callback(True, self.user.score, time.time() - self.start_time)
 				self.not_suspended = False
 				self.board.game_not_ended = False
 		
@@ -29,7 +30,7 @@ class Game(object):
 		
 		def player_dead():
 			self.board.game_not_ended = False
-			end_callback(False, self.user.score, 0)
+			end_callback(False, self.user.score, time.time() - self.start_time)
 
 		events.add_exit_listener(game_kill)
 		self.dataparser = levelparser.Levelparser(file_name, board_position, self.screen, fruit_kill_function, player_dead)
@@ -37,27 +38,31 @@ class Game(object):
 		self.num_fruits = 0
 
 	def start(self):
+		self.start_time = time.time()
 		self.board = self.dataparser.board
 		self.user = self.dataparser.player
 
-		self.dataparser.initiate_monsters()
 		self.dataparser.initiate_blocks()
 		self.next_wave()
 		self.board.start(self.user)
 
-		clock = pygame.time.Clock()
-
-		for movable in itertools.chain(self.dataparser.objects[levelparser.PATROLLING_MONSTERS],
-			self.dataparser.objects[levelparser.CHASING_MONSTERS],
-			self.dataparser.objects[levelparser.FRUIT_WAVES][self.dataparser.wave_number][levelparser.MOVING_FRUITS],
-			self.dataparser.objects[levelparser.RANDOM_MONSTERS]):
-			movable.activate()
-
 		pygame.display.flip()
 
 	def next_wave(self):
-		self.dataparser.next_fruit_wave()
+		if self.dataparser.wave_number != -1:
+			for monster in itertools.chain(
+				self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.PATROLLING_MONSTERS],
+				self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.CHASING_MONSTERS],
+				self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.RANDOM_MONSTERS]):
+				monster.kill()
+		self.dataparser.next_wave()
 		self.num_fruits = self.dataparser.get_current_wave_size()
+		for movable in itertools.chain(
+			self.dataparser.objects[levelparser.FRUIT_WAVES][self.dataparser.wave_number][levelparser.MOVING_FRUITS],
+			self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.PATROLLING_MONSTERS],
+			self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.CHASING_MONSTERS],
+			self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.RANDOM_MONSTERS]):
+			movable.activate()
 
 	def suspend(self):
 		self.not_suspended = False
