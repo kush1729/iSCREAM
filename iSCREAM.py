@@ -1142,15 +1142,15 @@ def reset():    #clear out grid at the end of every level
                 cells.walls[x][y] = False
     
 def gameEnd(won):
-    reset()
-    pygame.display.set_caption('iSCREAM')
-    
     #Find Time Taken to complete level
     endTime = int(time() - levels[lvl_no - 1].startTime)
     minute = endTime // 60
     seconds = endTime % 60
     if 10 > seconds >= 0: seconds = '0'+str(seconds)
     else: seconds = str(seconds)
+    if not won: sleep(1.0)
+    reset()
+    pygame.display.set_caption('iSCREAM')
 
     gameDisplay.fill(snow)
     if won: msg = 'YOU WIN'
