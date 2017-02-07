@@ -7,9 +7,9 @@ from threading import Lock
 
 class Movable(boardpiece.BoardPiece):
 
-    def __init__(self, given_board_location, given_board, surface, given_image_string):
+    def __init__(self, given_board_location, given_board, surface, collide_resolver, given_image_string):
         boardpiece.BoardPiece.__init__(
-            self, given_board_location, given_board, surface)
+            self, given_board_location, given_board, surface, collide_resolver)
 
         self.image = pygame.Surface(
             [self.board.square_side, self.board.square_side], pygame.SRCALPHA)
