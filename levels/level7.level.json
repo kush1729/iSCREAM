@@ -1,20 +1,27 @@
 {
     "boardHeight": 15,
     "boardWidth": 15,
-    "levelName": "Level 8",
-    "numFruitWaves": 1,
-    "player": [7, 8],
+    "levelName": "Level 7",
+    "numFruitWaves": 3,
+    "player": [0, 0],
     "fruitWaves": [
-        {"strawberries": [
-			{"points": [[3, 3], [11, 3], [11, 11], [3, 11]]},
-			{"points": [[4, 4], [10, 4], [10, 10], [4, 10]]}
-		]}],
+        {"strawberries": []},
+		{"strawberries": []},
+		{"strawberries": []}],
 	"monsterWaves": [{
-	"randomMonsters": [[0,1], [1,0], [14, 1], [13, 0], [1, 14], [0, 13], [14, 13], [13, 14]],
+	"randomMonsters": [],
 	"chasingMonsters": [],
     "patrollingMonsters": [
-			{"points": [[11, 11], [3, 11], [3, 3], [11, 3]]},
-			{"points": [[10, 10], [4, 10], [4, 4], [10, 4]]}
+			{"points": [[0, 14], [14, 14], [14, 0], [0, 0]]},
+			{"points": [[14, 0], [0, 0], [0, 14], [14, 14]]},
+			{"points": [[1, 2], [6, 2], [6, 6], [6, 2]]},
+			{"points": [[3, 3], [4, 3], [4, 5], [3, 5]]},
+			{"points": [[8, 2], [13, 2], [13, 6], [8, 6]]},
+			{"points": [[10, 3], [11, 3], [11, 5], [10, 5]]},
+			{"points": [[1, 8], [6, 8], [6, 12], [1, 12]]},
+			{"points": [[3, 9], [4, 9], [4, 11], [3, 11]]},
+			{"points": [[8, 8], [13, 8], [13, 12], [8, 12]]},
+			{"points": [[10, 9], [11, 9], [11, 11], [10, 11]]}
     ]}],
-    "mapFile": "level8.level.map"
+    "mapFile": "level7.level.map"
 }

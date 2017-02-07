@@ -5,7 +5,6 @@ import time
 import player
 import fruits
 
-
 class Monster(movable.Movable):
 
     def __init__(self, given_board_location, given_board, screen, given_image_string):
@@ -13,6 +12,7 @@ class Monster(movable.Movable):
             self, given_board_location, given_board, screen, given_image_string)
         self.tolerated_types = (player.Player,)
         self.picked_fruit = None
+        self.delay = 0.05
 
     def activate(self):
         self.point_feed = self.get_path()
@@ -50,7 +50,7 @@ class PatrollingMonster(paths.FixedPathFollower, Monster):
                          surface, ".\\images\\patrolling.png")
         paths.FixedPathFollower.__init__(self, given_path)
 
-        self.delay = 0.1
+        self.delay = monsters_delay
 
 
 class ChasingMonster(paths.ChaserAndBreaker, Monster):
@@ -60,8 +60,6 @@ class ChasingMonster(paths.ChaserAndBreaker, Monster):
                          surface, ".\\images\\chasing.png")
         paths.ChaserAndBreaker.__init__(self)
 
-        self.delay = 3
-
 
 class RandomMonster(paths.RandomWalker, Monster):
 
@@ -69,4 +67,4 @@ class RandomMonster(paths.RandomWalker, Monster):
         Monster.__init__(self, given_board_location,
                          given_board, surface, ".\\images\\random.png")
 
-        self.delay = 0.1
+        self.delay = monsters_delay
