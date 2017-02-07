@@ -5,8 +5,8 @@
     "numFruitWaves": 2,
     "player": [0, 0],
     "fruitWaves": [
-        {"strawberry": []},
-		{"strawberry": []}
+        {"strawberries": []},
+		{"strawberries": []}
     ],
 	"monsterWaves": [{
 	"randomMonsters": [],

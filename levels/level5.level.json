@@ -5,8 +5,8 @@
     "numFruitWaves": 2,
     "player": [7, 7],
     "fruitWaves": [
-        {"banana": []},
-		{"apple": []}
+        {"strawberries": []},
+		{"strawberries": []}
     ],
 	"monsterWaves": [
 	{"randomMonsters": [],
@@ -26,6 +26,6 @@
     "patrollingMonsters": [
 		{"points":[[6, 6], [6, 8], [8, 8], [8, 6]]}]
 	}
-	]
+	],
     "mapFile": "level5.level.map"
 }
