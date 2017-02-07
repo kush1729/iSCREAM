@@ -31,7 +31,7 @@ class Monster(movable.Movable):
                         elif self.board.is_player_at(location):
                             self.board.player.kill()
                         self.move_to(location)
-                        if self.picked_fruit:
+                        if self.picked_fruit and location != current_location:
                             self.board[current_location] = self.picked_fruit
                             self.picked_fruit.draw()
                         self.picked_fruit = next_picked_fruit
@@ -60,7 +60,7 @@ class ChasingMonster(paths.ChaserAndBreaker, Monster):
                          surface, ".\\images\\chasing.png")
         paths.ChaserAndBreaker.__init__(self)
 
-        self.delay = 0.1
+        self.delay = 3
 
 
 class RandomMonster(paths.RandomWalker, Monster):
