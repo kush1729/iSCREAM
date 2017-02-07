@@ -1,6 +1,12 @@
 {
     "gameLevels": [
         "level1.level.json",
-        "level2.level.json"
+        "level2.level.json",
+        "level3.level.json",
+        "level4.level.json",
+        "level5.level.json",
+        "level6.level.json",
+        "level7.level.json",
+        "level8.level.json"
     ]
 }
