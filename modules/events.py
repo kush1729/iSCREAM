@@ -33,25 +33,43 @@ def remove_exit_listener(callback):
     except KeyError:
         pass
 
+count_dict = {pygame.K_UP:None, pygame.K_DOWN:None, pygame.K_LEFT:None, pygame.K_RIGHT:None}
 def handle_event(event):
-    global loop
-    if event.type == pygame.KEYDOWN:
-        for action in event_dict[pygame.KEYDOWN][event.key]:
-            action()
-    elif event.type == pygame.MOUSEBUTTONUP:
-        for clickable in event_dict[pygame.MOUSEBUTTONUP].copy():
-            if clickable.rect.topleft[0] <= event.pos[0] <= clickable.rect.topright[0] \
-                and clickable.rect.topleft[1] <= event.pos[1] <= clickable.rect.bottomright[1]:
-                event_dict[pygame.MOUSEBUTTONUP][clickable]()
-    elif event.type == pygame.QUIT:
-        for action in event_dict[pygame.QUIT]:
-            action()
-        loop = False
+    global loop, count_dict
+    try:
+        if event.type == pygame.KEYDOWN:
+            for action in event_dict[pygame.KEYDOWN][event.key]:
+                if event.key in count_dict: count_dict[event.key] = 0
+                action()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            for clickable in event_dict[pygame.MOUSEBUTTONUP].copy():
+                if clickable.rect.topleft[0] <= event.pos[0] <= clickable.rect.topright[0] \
+                    and clickable.rect.topleft[1] <= event.pos[1] <= clickable.rect.bottomright[1]:
+                    event_dict[pygame.MOUSEBUTTONUP][clickable]()
+        elif event.type == pygame.QUIT:
+            for action in event_dict[pygame.QUIT]:
+                action()
+            loop = False
+    except:
+        if event[0] == 'longpress':
+            for action in event_dict[pygame.KEYDOWN][event[1]]:
+                action()
+            return
 
 def start():
+    global count_dict
     c = pygame.time.Clock()
     while loop:
         c.tick(30)
+        #to handle long press
+        keystate = pygame.key.get_pressed()
+        for arrow_key in count_dict:
+            pressed = keystate[arrow_key]
+            if pressed and count_dict[arrow_key] != None: count_dict[arrow_key] += 1
+            else: count_dict[arrow_key] = None
+            if count_dict[arrow_key] > 2:
+                handle_event(("longpress", arrow_key))
+                
         for e in pygame.event.get():
             handle_event(e)
 
