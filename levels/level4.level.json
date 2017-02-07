@@ -5,16 +5,17 @@
     "numFruitWaves": 2,
     "player": [0, 0],
     "fruitWaves": [
-        {"grape": []},
-		{"banana": []}
+        {"strawberry": []},
+		{"strawberry": []}
     ],
+	"monsterWaves": [{
 	"randomMonsters": [],
 	"chasingMonsters": [[14, 14]],
     "patrollingMonsters": [
         {"points":[[0, 0], [0, 14], [14, 14], [14, 0]]},
         {"points":[[14, 14], [14, 0], [0, 0], [0, 14]]},
         {"points":[[4, 4], [10, 4], [10, 10], [4, 10]]},
-        {"points":[[10, 10], [4, 10], [4, 4], [10, 4]]}
-    ],
+        {"points":[[10, 10], [4, 10], [4, 4], [10, 4]]}]
+	}],
     "mapFile": "level4.level.map"
 }

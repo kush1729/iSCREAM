@@ -1,0 +1,20 @@
+{
+    "boardHeight": 15,
+    "boardWidth": 15,
+    "levelName": "Level 8",
+    "numFruitWaves": 1,
+    "player": [7, 8],
+    "fruitWaves": [
+        {"strawberries": [
+			{"points": [[3, 3], [11, 3], [11, 11], [3, 11]]}
+			{"points": [[4, 4], [10, 4], [10, 10], [4, 10]]}
+		]}],
+	"monsterWaves": [{
+	"randomMonsters": [[0,1], [1,0], [14, 1], [13, 0], [1, 14], [0, 13], [14, 13], [13, 14]],
+	"chasingMonsters": [],
+    "patrollingMonsters": [
+			{"points": [[11, 11], [3, 11], [3, 3], [11, 3]]},
+			{"points": [[10, 10], [4, 10], [4, 4], [10, 4]]}
+    ]}],
+    "mapFile": "level8.level.map"
+}
