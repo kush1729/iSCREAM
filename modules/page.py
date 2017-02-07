@@ -102,7 +102,7 @@ class LevelPage(Page):
 			level_files = json.loads(game_file.read())['gameLevels']
 
 		level_button_margin_top = 150
-		level_button_margin_left = 25
+		level_button_margin_left = 12
 		num_level_buttons_in_row = 5
 		level_button_width = 94
 		level_button_height = 80
