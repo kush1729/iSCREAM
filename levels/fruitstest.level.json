@@ -14,9 +14,11 @@
             "strawberries": []
         }
     ],
-    "chasingMonsters": [],
+    "monsterWaves": [{
+"chasingMonsters": [],
 	"randomMonsters": [],
     "patrollingMonsters": [
-    ],
+    ]
+    }],
     "mapFile": "fruitstest.level.map"
 }
