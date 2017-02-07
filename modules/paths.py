@@ -14,7 +14,7 @@ class FixedPathFollower(movable.Movable):
     def get_path(self):
         feeder = PointFeeder(self.path)
         direction = 1
-        while self.board.game_not_suspended():
+        while True:
             new_position = feeder.next(direction)
             if self.board.is_location_clear(self.tolerated_types, new_position):
                 yield new_position
@@ -39,7 +39,7 @@ class ChaserAndBreaker(movable.Movable):
         self.current_block.melt()
 
     def get_path(self):
-        while self.board.game_not_suspended():
+        while True:
             if not self.current_block or self.current_block.dead:
                 self.current_block = None
 
@@ -73,7 +73,7 @@ class ChaserAndBreaker(movable.Movable):
 class RandomWalker(movable.Movable):
 
     def get_path(self):
-        while self.board.game_not_suspended():
+        while True:
             possible_points = [
                 self.board_location + direction \
                 for direction in directions.ALL_DIRECTIONS \
