@@ -36,6 +36,7 @@ class Player(Movable):
                     if self.board.game_not_suspended():
                         new_location = self.board_location + direction
                         if new_location in self.board and self.board.is_of_type(new_location, fruits.Fruit) and not self.board.is_frozen(new_location):
+                            self.board.draw_board_rect(new_location)
                             self.eat(self.board[new_location])
                         self.move_to(new_location)
                         self.direction = direction
