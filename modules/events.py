@@ -68,6 +68,7 @@ def start():
         while loop:
             c.tick(30)
             # to handle long press
+            long_press_delay_time = 3
             keystate = pygame.key.get_pressed()
             for arrow_key in count_dict:
                 pressed = keystate[arrow_key]
@@ -75,7 +76,7 @@ def start():
                     count_dict[arrow_key] += 1
                 else:
                     count_dict[arrow_key] = None
-                if count_dict[arrow_key] > 5:
+                if count_dict[arrow_key] > long_press_delay_time:
                     for action in event_dict[pygame.KEYDOWN][arrow_key]:
                         action()
 
