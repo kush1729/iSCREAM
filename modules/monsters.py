@@ -35,26 +35,6 @@ class Monster(movable.Movable):
                 try:
                     self.board.mutex.acquire()
                     try:
-                        # current_location = self.board_location
-                        # location = self.point_feed.next()
-                        # next_picked_fruit = self.board[location] if location != current_location and isinstance(self.board_location, fruits.Fruit) else None
-                        # update = True
-
-                        # if self.board.is_player_at(location):
-                        #     self.board.player.kill()
-                        # if self.picked_fruit and location != current_location:
-                        #     if isinstance(self.board[location], fruits.Fruit):
-                        #         next_picked_fruit = self.board[location]
-                        # elif self.picked_fruit:
-                        #     update = False
-                        #     next_picked_fruit = self.picked_fruit
-                        # self.move_to(location)
-                        # self.unpick(self.picked_fruit, current_location, update)
-
-                        # self.pick(next_picked_fruit)
-
-                        ###
-
                         current_location = self.board_location
                         location = self.point_feed.next()
                         next_picked_fruit = None
