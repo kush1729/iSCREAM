@@ -24,7 +24,7 @@ class Monster(movable.Movable):
         movable.Movable.__init__(
             self, given_board_location, given_board, screen, collide_resolver, given_image_string)
         self.tolerated_types = (player.Player, fruits.Fruit)
-        self.delay = 0.05
+        self.delay = 0.07
         self.is_alive = True
         self.point_feed = self.get_path()
 
@@ -92,19 +92,20 @@ class Monster(movable.Movable):
         move_scheduler.start()
         
     def pick(self, fruit):
-        print 'picked', fruit
+        # print 'picked', fruit
         self.picked_fruit = fruit
         if fruit:
             fruit.picked = True
 
     def unpick(self, fruit, location):
-        print 'dropped', fruit, location
+        # print 'dropped', fruit, location
         self.picked_fruit = None
         self.board[location] = fruit
         if fruit:
             fruit.board_location = location
             fruit.picked = False
-            fruit.draw()
+            if not isinstance(fruit, fruits.Strawberry):
+                fruit.draw()
     
     def kill(self):
         self.is_alive = False
