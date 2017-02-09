@@ -2,7 +2,7 @@ import sys
 sys.path.append('.\\modules\\') 
 
 import pygame
-pygame.init()			#initializing all modules
+pygame.init()
 
 import events
 from page import *
@@ -24,6 +24,7 @@ instruction_page.level_page = level_page
 
 level_page.game_page = game_page
 
+game_page.introduction_page = introduction_page
 game_page.results_page = results_page
 
 results_page.game_page = game_page

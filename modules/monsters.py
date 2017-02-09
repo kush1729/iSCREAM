@@ -35,23 +35,51 @@ class Monster(movable.Movable):
                 try:
                     self.board.mutex.acquire()
                     try:
+                        # current_location = self.board_location
+                        # location = self.point_feed.next()
+                        # next_picked_fruit = self.board[location] if location != current_location and isinstance(self.board_location, fruits.Fruit) else None
+                        # update = True
+
+                        # if self.board.is_player_at(location):
+                        #     self.board.player.kill()
+                        # if self.picked_fruit and location != current_location:
+                        #     if isinstance(self.board[location], fruits.Fruit):
+                        #         next_picked_fruit = self.board[location]
+                        # elif self.picked_fruit:
+                        #     update = False
+                        #     next_picked_fruit = self.picked_fruit
+                        # self.move_to(location)
+                        # self.unpick(self.picked_fruit, current_location, update)
+
+                        # self.pick(next_picked_fruit)
+
+                        ###
+
                         current_location = self.board_location
                         location = self.point_feed.next()
-                        next_picked_fruit = self.board[location]
-                        update = True
+                        next_picked_fruit = None
+                        should_pick = False
 
                         if self.board.is_player_at(location):
-                            self.board.player.kill()
-                        if self.picked_fruit and location != current_location:
-                            if isinstance(self.board[location], fruits.Fruit):
-                                next_picked_fruit = self.board[location]
-                        elif self.picked_fruit:
-                            update = False
-                            next_picked_fruit = self.picked_fruit
-                        self.move_to(location)
-                        self.unpick(self.picked_fruit, current_location, update)
+                            self.board[location].kill()
 
-                        self.pick(next_picked_fruit)
+                        if self.picked_fruit:
+                            if location != current_location:
+                                if self.board.is_of_type(location, fruits.Fruit):
+                                    next_picked_fruit = self.board[location]
+                                    should_pick = True
+                                self.move_to(location)
+                                self.unpick(self.picked_fruit, current_location)
+                                if should_pick:
+                                    self.pick(next_picked_fruit)
+                        else:
+                            if location != current_location:
+                                if self.board.is_of_type(location, fruits.Fruit):
+                                    should_pick = True
+                                    next_picked_fruit = self.board[location]
+                                self.move_to(location)
+                                if should_pick:
+                                    self.pick(next_picked_fruit)
 
                         if not self.is_alive:
                             self.board.draw_board_rect(self.board_location)
@@ -64,17 +92,19 @@ class Monster(movable.Movable):
         move_scheduler.start()
         
     def pick(self, fruit):
+        print 'picked', fruit
         self.picked_fruit = fruit
         if fruit:
             fruit.picked = True
 
-    def unpick(self, fruit, location, update):
+    def unpick(self, fruit, location):
+        print 'dropped', fruit, location
+        self.picked_fruit = None
         self.board[location] = fruit
         if fruit:
             fruit.board_location = location
             fruit.picked = False
-            if update:
-                fruit.draw()
+            fruit.draw()
     
     def kill(self):
         self.is_alive = False

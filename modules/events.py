@@ -46,7 +46,7 @@ count_dict = {pygame.K_UP: None, pygame.K_DOWN: None,
 def handle_event(event):
     global loop
     if event.type == pygame.KEYDOWN:
-        for action in event_dict[pygame.KEYDOWN][event.key]:
+        for action in event_dict[pygame.KEYDOWN][event.key].copy():
             if event.key in count_dict:
                 count_dict[event.key] = 0
             action()
