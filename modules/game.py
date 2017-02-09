@@ -42,16 +42,12 @@ class Game(object):
 				self.not_suspended = False
 				self.board.game_not_ended = False
 		
-		def game_kill():
-			self.board.game_not_ended = False
-			events.remove_keypress_listener(pygame.K_p, self.pause_toggle)
-			events.remove_exit_listener(game_kill)
 		
 		def player_dead():
 			self.board.game_not_ended = False
 			end_callback(False, self.user.score, time.time() - self.start_time)
 
-		events.add_exit_listener(game_kill)
+		events.add_exit_listener(self.kill)
 		events.add_keypress_listener(pygame.K_p, self.pause_toggle)
 		self.tick_callback = tick_callback
 		self.dataparser = levelparser.Levelparser(file_name, board_position, self.screen, fruit_kill_function, player_dead)
@@ -59,6 +55,11 @@ class Game(object):
 		self.user = self.dataparser.player
 		self.not_suspended = True
 		self.num_fruits = 0
+	
+	def kill(self):
+		self.board.game_not_ended = False
+		events.remove_keypress_listener(pygame.K_p, self.pause_toggle)
+		events.remove_exit_listener(self.kill)
 
 	def start(self):
 		self.start_time = time.time()
