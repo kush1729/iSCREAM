@@ -37,17 +37,19 @@ class Monster(movable.Movable):
                     try:
                         current_location = self.board_location
                         location = self.point_feed.next()
-                        next_picked_fruit = None
+                        next_picked_fruit = self.board[location]
+                        update = True
 
-                        if isinstance(self.board[location], fruits.Fruit):
-                            next_picked_fruit = self.board[location]
-                        elif self.board.is_player_at(location):
+                        if self.board.is_player_at(location):
                             self.board.player.kill()
-
-                        self.move_to(location)
-
                         if self.picked_fruit and location != current_location:
-                            self.unpick(self.picked_fruit, current_location)
+                            if isinstance(self.board[location], fruits.Fruit):
+                                next_picked_fruit = self.board[location]
+                        elif self.picked_fruit:
+                            update = False
+                            next_picked_fruit = self.picked_fruit
+                        self.move_to(location)
+                        self.unpick(self.picked_fruit, current_location, update)
 
                         self.pick(next_picked_fruit)
 
@@ -66,12 +68,13 @@ class Monster(movable.Movable):
         if fruit:
             fruit.picked = True
 
-    def unpick(self, fruit, location):
+    def unpick(self, fruit, location, update):
         self.board[location] = fruit
         if fruit:
             fruit.board_location = location
             fruit.picked = False
-            fruit.draw()
+            if update:
+                fruit.draw()
     
     def kill(self):
         self.is_alive = False
