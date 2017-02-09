@@ -64,11 +64,11 @@ def handle_event(event):
 
 def start():
     c = pygame.time.Clock()
+    long_press_delay_time = 5
     try:
         while loop:
             c.tick(30)
             # to handle long press
-            long_press_delay_time = 5
             keystate = pygame.key.get_pressed()
             for arrow_key in count_dict:
                 pressed = keystate[arrow_key]
