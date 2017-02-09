@@ -34,6 +34,9 @@ class Fruit(boardpiece.BoardPiece):
             elif self.board.is_of_type(location, player.Player):
                 self.should_draw_on_init = False
                 self.board[location].eat(self)
+            elif self.board.is_of_type(location, Fruit):
+                self.board[location].kill()
+                self.board.reserve_location(location, self)
         
         boardpiece.BoardPiece.__init__(
             self, given_board_location, given_board, surface, collide_resolver)
