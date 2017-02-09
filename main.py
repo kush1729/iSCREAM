@@ -1,8 +1,8 @@
 import sys
-sys.path.append('.\\modules\\')
+sys.path.append('.\\modules\\') 
 
 import pygame
-pygame.init()
+pygame.init()			#initializing all modules
 
 import events
 from page import *
