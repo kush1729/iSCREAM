@@ -157,6 +157,14 @@ class GamePage(Page):
 		pygame.draw.rect(self.image, colors.LIGHT_GREEN, self.score_rect)
 		pygame.draw.rect(self.image, colors.LIGHT_GREEN, self.time_rect)
 	
+		def goto_introduction():
+			self.clean()
+			def show_page():
+				self.introduction_page.display()
+			threading.Timer(1, show_page).start()
+		
+		self.goto_introduction = goto_introduction
+	
 	def draw_border_rect(self, update_rect):
 		pygame.draw.rect(self.image, colors.MED_BLUE, update_rect)
 		pygame.draw.rect(self.image, colors.BLACK, update_rect, 1)
@@ -192,6 +200,8 @@ class GamePage(Page):
 			
 			clear_scheduler = threading.Timer(1, clear_screen)
 			clear_scheduler.start()
+
+		events.add_keypress_listener(pygame.K_ESCAPE, self.goto_introduction)
 		
 		Page.display(self)
 		self.screen.blit(self.image, (0, 0))
@@ -200,8 +210,13 @@ class GamePage(Page):
 		score_callback(0)
 		tick_callback(0)
 
-		current_game = game.Game(self.screen, (35, 35), level_file, score_callback, tick_callback, end_callback)
-		current_game.start()
+		self.current_game = game.Game(self.screen, (35, 35), level_file, score_callback, tick_callback, end_callback)
+		self.current_game.start()
+	
+	def clean(self):
+		Page.clean(self)
+		self.current_game.kill()
+		events.remove_keypress_listener(pygame.K_ESCAPE, self.goto_introduction)
 
 class ResultsPage(Page):
 	def __init__(self, screen):
