@@ -55,6 +55,8 @@ class Game(object):
 		events.add_keypress_listener(pygame.K_p, self.pause_toggle)
 		self.tick_callback = tick_callback
 		self.dataparser = levelparser.Levelparser(file_name, board_position, self.screen, fruit_kill_function, player_dead)
+		self.board = self.dataparser.board
+		self.user = self.dataparser.player
 		self.not_suspended = True
 		self.num_fruits = 0
 
@@ -66,9 +68,6 @@ class Game(object):
 				time.sleep(1)
 				self.tick_callback(time.time() - self.start_time)
 		threading.Timer(0, ticker).start()
-
-		self.board = self.dataparser.board
-		self.user = self.dataparser.player
 
 		self.dataparser.initiate_blocks()
 		self.next_wave()
