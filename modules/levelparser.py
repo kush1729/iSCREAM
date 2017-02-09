@@ -25,6 +25,7 @@ ICE_BLOCKS = 'iceBlocks'
 WALL_BLOCKS = 'wallBlocks'
 POINTS = 'points'
 PLAYER = 'player'
+RESET_AFTER = 'resetAfter'
 
 board_piece_type = {
 	'i': blocks.IceBlock,
@@ -150,8 +151,15 @@ class Levelparser(object):
 					self.board,
 					self.screen
 				) for location in self.data[MONSTER_WAVES][self.wave_number][RANDOM_MONSTERS]
-			]
+			],
+			RESET_AFTER: self.get_reset_after(self.wave_number)
 		})
+	
+	def get_reset_after(self, wave_number):
+		try:
+			return self.data[MONSTER_WAVES][self.wave_number][RESET_AFTER]
+		except KeyError:
+			return False
 
 	def get_current_wave_size(self):
 		return len(self.objects[FRUIT_WAVES][self.wave_number][STATIC_FRUITS]) \

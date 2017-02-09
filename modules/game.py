@@ -77,7 +77,7 @@ class Game(object):
 		pygame.display.flip()
 
 	def next_wave(self):
-		if self.dataparser.wave_number != -1:
+		if self.dataparser.wave_number != -1 and self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.RESET_AFTER]:
 			for monster in itertools.chain(
 				self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.PATROLLING_MONSTERS],
 				self.dataparser.objects[levelparser.MONSTER_WAVES][self.dataparser.wave_number][levelparser.CHASING_MONSTERS],
