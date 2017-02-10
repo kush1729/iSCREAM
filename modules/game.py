@@ -38,13 +38,12 @@ class Game(object):
 				if decision:
 					self.next_wave()
 			except IndexError:
+				self.kill()
 				end_callback(True, self.user.score, time.time() - self.start_time)
-				self.not_suspended = False
-				self.board.game_not_ended = False
 		
 		
 		def player_dead():
-			self.board.game_not_ended = False
+			self.kill()
 			end_callback(False, self.user.score, time.time() - self.start_time)
 
 		events.add_exit_listener(self.kill)
