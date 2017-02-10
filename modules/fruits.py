@@ -29,7 +29,7 @@ class Fruit(boardpiece.BoardPiece):
             elif self.board.is_of_type(location, blocks.Block):
                 self.should_draw_on_init = True
                 self.board[location].kill()
-                self.freeze()
+                self.frozen = True
                 self.board.reserve_location(location, self)
             elif self.board.is_of_type(location, player.Player):
                 self.should_draw_on_init = False
@@ -99,7 +99,7 @@ class Strawberry(Fruit, paths.FixedPathFollower):
     def activate(self):
 
         def mover():
-            while self.alive:
+            while self.alive and self.board.game_not_suspended():
                 time.sleep(self.delay)
                 self.board.mutex.acquire()
                 try:
