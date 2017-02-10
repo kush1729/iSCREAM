@@ -1,3 +1,12 @@
+"""
+Welcome to iSCREAM!
+This is a game about an icecream that wants to eat fruits and
+survive monsters.
+Launch by either double-clicking on main.py, or by launching from command line as:
+python main.py
+"""
+
+
 import sys
 sys.path.append('.\\modules\\') 
 

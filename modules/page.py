@@ -49,6 +49,7 @@ class IntroductionPage(Page):
 			'PLAY',
 			pygame.Rect(50, 450, 125, 125),
 			colors.GREEN,
+			colors.LIGHT_GREEN,
 			colors.BLACK,
 			goto_play,
 			self.screen
@@ -64,6 +65,7 @@ class IntroductionPage(Page):
 			'INSTRUCTIONS',
 			pygame.Rect((self.screen.get_rect().width - 175) / 2, 450, 175, 125),
 			colors.ORANGE,
+			colors.YELLOW,
 			colors.BLACK,
 			goto_instructions,
 			self.screen
@@ -78,6 +80,7 @@ class IntroductionPage(Page):
 			'QUIT',
 			pygame.Rect((self.screen.get_rect().width - 175), 450, 125, 125),
 			colors.RED,
+			colors.ORANGE,
 			colors.BLACK,
 			quitter,
 			self.screen
@@ -124,6 +127,7 @@ class LevelPage(Page):
 					level_button_height
 				),
 				colors.GREEN,
+				colors.LIGHT_GREEN,
 				colors.BLACK,
 				level_navigator(level_file),
 				self.screen
@@ -158,6 +162,7 @@ class GamePage(Page):
 		pygame.draw.rect(self.image, colors.LIGHT_GREEN, self.time_rect)
 	
 		def goto_introduction():
+			self.current_game.kill()
 			self.clean()
 			def show_page():
 				self.introduction_page.display()
@@ -195,8 +200,8 @@ class GamePage(Page):
 		
 		def end_callback(user_won, score, time):
 			def clear_screen():
-				self.results_page.display(user_won, score, time, level_file)
 				self.clean()
+				self.results_page.display(user_won, score, time, level_file)
 			
 			clear_scheduler = threading.Timer(1, clear_screen)
 			clear_scheduler.start()
@@ -215,7 +220,6 @@ class GamePage(Page):
 	
 	def clean(self):
 		Page.clean(self)
-		self.current_game.kill()
 		events.remove_keypress_listener(pygame.K_ESCAPE, self.goto_introduction)
 
 class ResultsPage(Page):
@@ -230,6 +234,7 @@ class ResultsPage(Page):
 			'PLAY AGAIN',
 			pygame.Rect(50, 450, 125, 125),
 			colors.GREEN,
+			colors.LIGHT_GREEN,
 			colors.BLACK,
 			goto_play_again,
 			self.screen
@@ -245,6 +250,7 @@ class ResultsPage(Page):
 			'MAIN MENU',
 			pygame.Rect((self.screen.get_rect().width - 175) / 2, 450, 175, 125),
 			colors.ORANGE,
+			colors.YELLOW,
 			colors.BLACK,
 			goto_introduction,
 			self.screen
@@ -259,6 +265,7 @@ class ResultsPage(Page):
 			'QUIT',
 			pygame.Rect((self.screen.get_rect().width - 175), 450, 125, 125),
 			colors.RED,
+			colors.ORANGE,
 			colors.BLACK,
 			quitter,
 			self.screen
@@ -333,6 +340,7 @@ class InstructionPage(Page):
 			'PLAY',
 			pygame.Rect(50, 500, 175, 75),
 			colors.GREEN,
+			colors.LIGHT_GREEN,
 			colors.BLACK,
 			goto_play,
 			self.screen
@@ -347,6 +355,7 @@ class InstructionPage(Page):
 			'QUIT',
 			pygame.Rect(self.screen.get_rect().width - 225, 500, 175, 75),
 			colors.RED,
+			colors.ORANGE,
 			colors.BLACK,
 			quitter,
 			self.screen
